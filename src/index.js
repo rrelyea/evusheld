@@ -181,8 +181,7 @@ function GetProviderDetails(state, index, providers) {
                       <td style={styles.td}>
                         <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> doses @{toDate(provider[13])}</span></div>
                         <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> total @{toDate(provider[9])}</span></div>
-                        <div>&nbsp;</div>
-                        <div>Last delivery: {toDate(provider[10])}</div>
+                        <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
                       </td>
                       </tr>
           }
