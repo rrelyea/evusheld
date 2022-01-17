@@ -189,7 +189,7 @@ function GetProviderDetails(state, index, providers) {
 
         }
        )}
-         { (anyFilter && siteCount > 0) || !anyFilter ?
+         { state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
           <tr style={styles.totals}>
             <td style={styles.totals}>&nbsp;</td>
             <td style={styles.doseCount}>{state[2]} Totals:</td>
@@ -231,9 +231,8 @@ function renderPage(states, evusheldSites) {
       <label style={styles.chooseState} htmlFor='chooseState'>See Evusheld order/inventory info for this state:&nbsp;</label>
       <select style={styles.chooseState} id='chooseState' value={state_filter !== null ? state_filter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
       <option value="">Choose State</option>
-      <option value='ALL'>All States &amp; Territories</option>
-      {states.data.map(state => 
-        <option value={state[3].trim()}>{state[2].trim() + " (" + state[3].trim() + ")"}</option>
+      {states.data.map((state,index) => 
+        <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
       )} 
     </select>
     <div>
