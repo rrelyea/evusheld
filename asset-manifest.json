@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/evusheld/static/js/main.55935e4b.js",
+    "main.js": "/evusheld/static/js/main.c28a7c01.js",
     "static/js/787.55e32945.chunk.js": "/evusheld/static/js/787.55e32945.chunk.js",
     "index.html": "/evusheld/index.html",
-    "main.55935e4b.js.map": "/evusheld/static/js/main.55935e4b.js.map",
+    "main.c28a7c01.js.map": "/evusheld/static/js/main.c28a7c01.js.map",
     "787.55e32945.chunk.js.map": "/evusheld/static/js/787.55e32945.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.55935e4b.js"
+    "static/js/main.c28a7c01.js"
   ]
 }
