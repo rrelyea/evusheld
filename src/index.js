@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom'
 
 const styles = {
   countyCity: {
-    fontSize: '24pt'
+    fontSize: '20pt'
   },    
   provider: {
     marginLeft: '10px',
@@ -18,11 +18,14 @@ const styles = {
     backgroundColor: '#637A14',
   },
   doseCount: {
-    fontSize: '36pt',
-    verticalAlign: 'top'
+    fontSize: '24pt',
+    verticalAlign: 'bottom'
+  },
+  doseLabel: {
+    verticalAlign: 'top',
   },
   mediumFont: {
-    fontSize: '24pt'
+    fontSize: '20pt'
   },  
   chooseState: {
     fontSize: '18pt'
@@ -36,7 +39,7 @@ const styles = {
     backgroundColor: '#E1F4A2',
     top: '0px',
     zIndex: 2,
-    fontSize: '24px'
+    fontSize: '20px'
   },
   odd: {
     background: 'white',
@@ -77,7 +80,7 @@ function GetStateDetails(states, providers) {
       <tr>
         <th style={styles.th}>State / County / City</th>
         <th style={styles.th}>Provider / Address1 / Address2 / ZipCode</th>
-        <th style={styles.th}>Dose Inventory / Doses Ordered (Total)</th>
+        <th style={styles.th}>Doses in Stock / Total Ordered</th>
       </tr>
       </thead>
       {StateDetails}
@@ -95,7 +98,9 @@ function toDate(str) {
   }
   else
   {
-    return (new Date(str)).toDateString()
+    var dateString = (new Date(str)).toDateString();
+    var dateLength = dateString.length;
+    return dateString.substring(0, dateLength - 5);
   }
 }
 function GetProviderDetails(state, index, providers) {
@@ -120,6 +125,12 @@ function GetProviderDetails(state, index, providers) {
   var orderedState = 0;
   return <tbody>
        { providers.map((provider, index) => {
+          // skip blank lines
+          if (provider.length === 1) 
+          {
+            return null;
+          }
+
           const provider_state = provider[5].trim();
           var countyCity = null;
           var provider_x = null;
@@ -168,9 +179,9 @@ function GetProviderDetails(state, index, providers) {
                         <div>{npi}</div>
                       </td>
                       <td style={styles.td}>
-                        <div style={styles.doseCount}>{remaining} / {ordered}</div>
-                        <div>Remaining # as of {toDate(provider[13])}</div>
-                        <div>Last order: {toDate(provider[9])}</div>
+                        <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> doses @{toDate(provider[13])}</span></div>
+                        <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> total @{toDate(provider[9])}</span></div>
+                        <div>&nbsp;</div>
                         <div>Last delivery: {toDate(provider[10])}</div>
                       </td>
                       </tr>
@@ -189,13 +200,11 @@ function GetProviderDetails(state, index, providers) {
        </tbody>
 }
 
-
-
 function renderPage(states, evusheldSites) {
   const handleChange = (e) => {
     const params = new URLSearchParams(window.location.search);
     params.set('state', e.target.value);
-    window.history.replaceState({}, document.title, `${window.location.pathname}?${params.toString()}`);
+    window.history.replaceState({}, "Evusheld (" + e.target.value + ")", `${window.location.pathname}?${params.toString()}`);
     renderPage(states, evusheldSites);
   }
 
@@ -239,7 +248,7 @@ function renderPage(states, evusheldSites) {
 }
 
   var evusheldSites = null;
-  Papa.parse("./data/evusheld-data.csv", {
+  Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv", {
     download: true,
     complete: function(evusheldResults) {
       evusheldSites = evusheldResults;
@@ -248,7 +257,7 @@ function renderPage(states, evusheldSites) {
   });
 
   var states = null;
-  Papa.parse("./data/state-health-departments.csv", {
+  Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/state-health-departments.csv", {
     download: true,
     complete: function(stateResults) {
       states = stateResults;
