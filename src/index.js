@@ -3,7 +3,6 @@ import Papa from 'papaparse';
 import React from 'react';
 import ReactDOM from 'react-dom'
 import MapChart from "./MapChart";
-
 import allStates from "./data/allstates.json";
 
 const styles = {
@@ -63,14 +62,13 @@ const styles = {
 }
 
 var state_filter = "";
-var county_filter = "";
-var city_filter = "";
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
     return (word.charAt(0).toUpperCase() + word.slice(1));
   }).join(' ');
 }
+
 function toNumber(str) {
   if (str.trim() === "") {
     return "--";
@@ -115,8 +113,8 @@ function toDate(str) {
     return dateString.substring(0, dateLength - 5);
   }
 }
+
 function GetProviderDetails(state, index, providers) {
-  
   switch (state_filter) {
     case null:
     case "":
@@ -148,22 +146,8 @@ function GetProviderDetails(state, index, providers) {
           var state_code = state[3] !== null ? state[3].trim() : state[3];
           var county = provider[4] !== null ? provider[4].trim() : provider[4];
           var city = provider[3] !== null ? provider[3].trim() : provider[3];
-          var filterOut = false;
-
-          if (county_filter !== "" && county_filter.toUpperCase() !== county.toUpperCase())
-          {
-            filterOut = true;
-          }
-
-          if (city_filter !== "" && city_filter.toUpperCase() !== city.toUpperCase())
-          {
-            filterOut = true;
-          }
           
-          if (filterOut) {
-            return null;
-          }
-          else if (provider_state === state_code) {
+          if (provider_state === state_code) {
             if (lastCity !== toTitleCase(city)) {
               lastCity = toTitleCase(city);
               countyCity = state_code + " / " + toTitleCase(county) + " / " + toTitleCase(city);
@@ -249,14 +233,6 @@ function renderPage(states, evusheldSites) {
       state_filter = urlParams.get('state').toUpperCase();
     }
 
-    if (urlParams.has('county')) {
-      county_filter = urlParams.get('county').toUpperCase();
-    }
-
-    if (urlParams.has('city')) {
-      city_filter = urlParams.get('city').toUpperCase();
-    }
-
     var page = <div>
       <div>
         <label style={styles.chooseState} htmlFor='chooseState'>See Evusheld order/inventory info for:&nbsp;</label>
@@ -289,23 +265,23 @@ function renderPage(states, evusheldSites) {
   }
 }
 
-  var evusheldSites = null;
-  Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv", {
-    download: true,
-    complete: function(evusheldResults) {
-      evusheldSites = evusheldResults;
-      renderPage(states, evusheldSites);
-    }
-  });
+var evusheldSites = null;
+Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv", {
+  download: true,
+  complete: function(evusheldResults) {
+    evusheldSites = evusheldResults;
+    renderPage(states, evusheldSites);
+  }
+});
 
-  var states = null;
-  Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/state-health-departments.csv", {
-    download: true,
-    complete: function(stateResults) {
-      states = stateResults;
-      renderPage(states, evusheldSites);
-    }
-  });
+var states = null;
+Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/state-health-departments.csv", {
+  download: true,
+  complete: function(stateResults) {
+    states = stateResults;
+    renderPage(states, evusheldSites);
+  }
+});
 
   
 // If you want to start measuring performance in your app, pass a function
