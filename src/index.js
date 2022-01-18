@@ -198,10 +198,10 @@ function navigateToState(state) {
   const params = new URLSearchParams(window.location.search);
   params.set('state', state);
   window.history.replaceState({}, "Evusheld (" + state + ")", `${window.location.pathname}?${params.toString()}`);
-  renderPage(states, evusheldSites);
+  renderPage(states, evusheldSites, dataUpdates);
 }
 
-function renderPage(states, evusheldSites) {
+function renderPage(states, evusheldSites, dataUpdates) {
   const handleChange = (e) => {
     navigateToState(e.target.value);
   }
@@ -233,15 +233,21 @@ function renderPage(states, evusheldSites) {
       state_filter = urlParams.get('state').toUpperCase();
     }
 
+    var dataUpdated = new Date(dataUpdates.data[0][0]);
+    var dataUpdatedLocalString = dataUpdated.toLocaleString('en-US', { weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
+
     var page = <div>
       <div>
-        <label style={styles.chooseState} htmlFor='chooseState'>See Evusheld order/inventory info for:&nbsp;</label>
+        <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
         <select style={styles.chooseState} id='chooseState' value={state_filter !== null ? state_filter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
           <option value="">Choose State</option>
           {states.data.map((state,index) => 
             <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
           )} 
         </select>
+        <div style={styles.smallerFont}>
+          [latest data published by healthdata.gov: {dataUpdatedLocalString}]
+        </div>
         <div onClick={mapClick} style={styles.mapDiv}>
           <MapChart id='mapChart' style />
         </div>
@@ -270,7 +276,7 @@ Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history
   download: true,
   complete: function(evusheldResults) {
     evusheldSites = evusheldResults;
-    renderPage(states, evusheldSites);
+    renderPage(states, evusheldSites, dataUpdates);
   }
 });
 
@@ -279,7 +285,16 @@ Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history
   download: true,
   complete: function(stateResults) {
     states = stateResults;
-    renderPage(states, evusheldSites);
+    renderPage(states, evusheldSites, dataUpdates);
+  }
+});
+
+var dataUpdates = null;
+Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/evusheld-data-updates.log", {
+  download: true,
+  complete: function(updates) {
+    dataUpdates = updates;
+    renderPage(states, evusheldSites, dataUpdates);
   }
 });
 
