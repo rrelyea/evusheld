@@ -2,10 +2,13 @@ import reportWebVitals from './reportWebVitals';
 import Papa from 'papaparse';
 import React from 'react';
 import ReactDOM from 'react-dom'
+import MapChart from "./MapChart";
+
+import allStates from "./data/allstates.json";
 
 const styles = {
   countyCity: {
-    fontSize: '20pt'
+    fontSize: '14pt'
   },    
   provider: {
     marginLeft: '10px',
@@ -18,17 +21,27 @@ const styles = {
     backgroundColor: '#637A14',
   },
   doseCount: {
-    fontSize: '24pt',
+    fontSize: '14pt',
     verticalAlign: 'bottom'
   },
   doseLabel: {
     verticalAlign: 'top',
   },
   mediumFont: {
-    fontSize: '20pt'
+    fontSize: '14pt'
+  },  
+  smallerFont: {
+    fontSize: '10pt'
+  },
+  tinyFont: {
+    fontSize: '5pt'
   },  
   chooseState: {
     fontSize: '18pt'
+  },
+  mapDiv: {
+    height: '250px',
+    width: '350px',
   },
   td: {
     verticalAlign: 'top',
@@ -52,7 +65,6 @@ const styles = {
 var state_filter = null;
 var county_filter = null;
 var city_filter = null;
-var anyFilter = false;
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -80,7 +92,7 @@ function GetStateDetails(states, providers) {
       <tr>
         <th style={styles.th}>State / County / City</th>
         <th style={styles.th}>Provider / Address1 / Address2 / ZipCode</th>
-        <th style={styles.th}>Doses in Stock / Total Ordered</th>
+        <th style={styles.th}>Availalble / Allotted</th>
       </tr>
       </thead>
       {StateDetails}
@@ -118,7 +130,6 @@ function GetProviderDetails(state, index, providers) {
 
   if (state[3].trim() === "") return null;
 
-  var siteCount = 0;
   var lastCity = "";
   var lastCityStyle = null;
   var remainingState = 0;
@@ -153,7 +164,6 @@ function GetProviderDetails(state, index, providers) {
             return null;
           }
           else if (provider_state === state_code) {
-            siteCount++;
             if (lastCity !== toTitleCase(city)) {
               lastCity = toTitleCase(city);
               countyCity = state_code + " / " + toTitleCase(county) + " / " + toTitleCase(city);
@@ -179,9 +189,10 @@ function GetProviderDetails(state, index, providers) {
                         <div>{npi}</div>
                       </td>
                       <td style={styles.td}>
-                        <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> doses @{toDate(provider[13])}</span></div>
-                        <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> total @{toDate(provider[9])}</span></div>
+                        <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
+                        <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> alloted @{toDate(provider[9])}</span></div>
                         <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
+                        <div style={styles.tinyFont}>&nbsp;</div>
                       </td>
                       </tr>
           }
@@ -199,12 +210,35 @@ function GetProviderDetails(state, index, providers) {
        </tbody>
 }
 
+function navigateToState(state) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('state', state);
+  window.history.replaceState({}, "Evusheld (" + state + ")", `${window.location.pathname}?${params.toString()}`);
+  renderPage(states, evusheldSites);
+}
+
 function renderPage(states, evusheldSites) {
   const handleChange = (e) => {
-    const params = new URLSearchParams(window.location.search);
-    params.set('state', e.target.value);
-    window.history.replaceState({}, "Evusheld (" + e.target.value + ")", `${window.location.pathname}?${params.toString()}`);
-    renderPage(states, evusheldSites);
+    navigateToState(e.target.value);
+  }
+  const mapClick = (e) => {
+    var element = e.target;
+    var state_code = null;
+    if (element.tagName === "text")
+    {
+      state_code = element.innerHTML;
+    }
+    else
+    {
+      var parent = element.parentElement;
+      var index = Array.from(parent.children).indexOf(element);
+      const cur = allStates.find(s => s.index === index);
+      state_code = cur.id;
+    }
+
+    var chooseState = document.getElementById('chooseState');
+    chooseState.value = state_code;
+    navigateToState(state_code);  
   }
 
   if (states != null && evusheldSites != null)
@@ -223,10 +257,7 @@ function renderPage(states, evusheldSites) {
       city_filter = urlParams.get('city').toUpperCase();
     }
 
-    anyFilter = state_filter || county_filter || city_filter;
-    
-
-    var page = <div>
+    var page = <div><div>
       <label style={styles.chooseState} htmlFor='chooseState'>See Evusheld order/inventory info for this state:&nbsp;</label>
       <select style={styles.chooseState} id='chooseState' value={state_filter !== null ? state_filter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
       <option value="">Choose State</option>
@@ -234,10 +265,23 @@ function renderPage(states, evusheldSites) {
         <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
       )} 
     </select>
+    <div onClick={mapClick} style={styles.mapDiv}>
+      <MapChart id='mapChart' style />
+    </div>
+    </div>
+    <div style={styles.smallerFont}>
+      (or see the data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, in <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a>)
+    </div>
+ 
     <div>
         { 
           GetStateDetails(states.data, evusheldSites.data)
         }
+    </div>
+    <div style={styles.smallerFont}>&nbsp;</div>
+    <div style={styles.smallerFont}>
+      (Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a>
+      (See source code for site: <a href="https://github.com/rrelyea/evusheld">github.com/rrelyea/evusheld</a> and data fetching: <a href="github.com/rrelyea/evusheld-locations-history">https://github.com/rrelyea/evusheld-locations-history</a> )
     </div>
     </div>
 
