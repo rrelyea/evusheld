@@ -212,7 +212,7 @@ function renderPage(states, evusheldSites, dataUpdates) {
     {
       state_code = element.innerHTML;
     }
-    else
+    else if (element.tagName === "path")
     {
       var parent = element.parentElement;
       var index = Array.from(parent.children).indexOf(element);
@@ -220,9 +220,11 @@ function renderPage(states, evusheldSites, dataUpdates) {
       state_code = cur.id;
     }
 
-    var chooseState = document.getElementById('chooseState');
-    chooseState.value = state_code;
-    navigateToState(state_code);  
+    if (state_code !== null) {
+      var chooseState = document.getElementById('chooseState');
+      chooseState.value = state_code;
+      navigateToState(state_code);  
+    }
   }
 
   if (states != null && evusheldSites != null)
