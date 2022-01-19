@@ -263,7 +263,7 @@ function renderPage(states, evusheldSites, dataUpdates) {
         <div style={styles.smallerFont}>&nbsp;</div>
         <div style={styles.smallerFont}>
           Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> | 
-          Source code for site: <a href="https://github.com/rrelyea/evusheld">github.com/rrelyea/evusheld</a> and data fetching: <a href="https://github.com/rrelyea/evusheld-locations-history">github.com/rrelyea/evusheld-locations-history</a>
+          Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">Evusheld data fetching</a>
         </div>
       </div>
 
