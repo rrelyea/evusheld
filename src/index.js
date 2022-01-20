@@ -14,11 +14,6 @@ const styles = {
     marginTop: '30px',
     marginBottom: '30px',
   },
-  totals: {
-    lineHeight: '60px',
-    padding: '15px 0',
-    backgroundColor: '#637A14',
-  },
   doseCount: {
     fontSize: '14pt',
     verticalAlign: 'bottom'
@@ -46,9 +41,10 @@ const styles = {
     verticalAlign: 'top',
     wordWrap: 'break-word',
   },
+  // table color theme started with primary color of #f1ec90 and used https://material.io/design/color/the-color-system.html#tools-for-picking-colors
   th: {
     position: 'sticky',
-    backgroundColor: '#E1F4A2',
+    backgroundColor: '#9095f1',
     top: '0px',
     zIndex: 2,
     fontSize: '20px'
@@ -57,8 +53,13 @@ const styles = {
     background: 'white',
   },
   even: {
-    background: '#FFFAAA',
-  }
+    background: '#f1ec90',
+  },
+  totals: {
+    lineHeight: '60px',
+    padding: '15px 0',
+    backgroundColor: '#f1bb90',
+  },
 }
 
 var state_filter = "";
