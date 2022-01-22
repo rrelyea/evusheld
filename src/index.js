@@ -9,10 +9,11 @@ const styles = {
   countyCity: {
     fontSize: '14pt'
   },
-  provider: {
+  providerTable: {
     marginLeft: '10px',
     marginTop: '30px',
     marginBottom: '30px',
+    margin: '0 auto',
   },
   doseCount: {
     fontSize: '14pt',
@@ -61,7 +62,7 @@ const styles = {
   },
   totals: {
     lineHeight: '60px',
-    padding: '15px 0',
+    padding: '0 0',
     backgroundColor: '#f1bb90',
   },
 }
@@ -90,7 +91,7 @@ function GetStateDetails(states, providers) {
   })
   if (state_filter !== "")
   {
-    return (<table style={styles.provider}>
+    return (<table style={styles.providerTable}>
       <thead>
       <tr>
         <th style={styles.th}>State / County / City</th>
@@ -243,38 +244,40 @@ function renderPage(states, evusheldSites, dataUpdates) {
     var dataUpdated = new Date(dataUpdates.data[0][0]);
     var dataUpdatedLocalString = dataUpdated.toLocaleString('en-US', { weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
 
-    var page = <div>
-      <div style={styles.centered}>
-        <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
-        <select style={styles.mediumFont} id='chooseState' value={state_filter !== null ? state_filter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
-          <option value="">Choose State</option>
-          {states.data.map((state,index) => 
-            <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
-          )} 
-        </select>
-        <div style={styles.smallerFont}>
-          [latest data published by healthdata.gov: {dataUpdatedLocalString}]
-        </div>
-        <div onClick={mapClick} style={styles.mapDiv}>
-          <MapChart id='mapChart' />
-        </div>
-        
-        <div style={styles.smallerFont}>
-          ( or view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> )
-        </div>
-      </div>
+    var page = 
       <div>
-          { 
-            GetStateDetails(states.data, evusheldSites.data)
-          }
+        <div style={styles.centered}>
+          <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
+          <select style={styles.mediumFont} id='chooseState' value={state_filter !== null ? state_filter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
+            <option value="">Choose State</option>
+            {states.data.map((state,index) => 
+              <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
+            )} 
+          </select>
+          <div style={styles.smallerFont}>
+            [latest data published by <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>: {dataUpdatedLocalString}]
+          </div>
+          <div onClick={mapClick} style={styles.mapDiv}>
+            <MapChart id='mapChart' />
+          </div>
+          
+          <div style={styles.smallerFont}>
+            ( or view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> )
+          </div>
+          <div style={styles.smallerFont}>&nbsp;</div>
+          <div>
+              { 
+                GetStateDetails(states.data, evusheldSites.data)
+              }
+          </div>
+          <div style={styles.smallerFont}>&nbsp;</div>
+          <div style={styles.smallerFont}>
+            Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> | 
+            Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">Evusheld data fetching</a>
+          </div>
+        </div>
       </div>
-      <div style={styles.smallerFont}>&nbsp;</div>
-      <div style={styles.smallerFont}>
-        Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> | 
-        Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">Evusheld data fetching</a>
-      </div>
-    </div>
-
+      
     ReactDOM.render(page, document.getElementById('root'));
   }
 }
