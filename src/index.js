@@ -8,7 +8,7 @@ import allStates from "./data/allstates.json";
 const styles = {
   countyCity: {
     fontSize: '14pt'
-  },    
+  },
   provider: {
     marginLeft: '10px',
     marginTop: '30px',
@@ -34,8 +34,12 @@ const styles = {
     fontSize: '18pt'
   },
   mapDiv: {
+    margin: '0 auto',
     height: '250px',
     width: '350px',
+  },
+  centered: {
+    textAlign: 'center',
   },
   td: {
     verticalAlign: 'top',
@@ -138,7 +142,7 @@ function GetProviderDetails(state, index, providers) {
           // skip blank lines
           if (provider.length === 1) 
           {
-            return null;
+            return false;
           }
 
           const provider_state = provider[5].trim();
@@ -190,7 +194,7 @@ function GetProviderDetails(state, index, providers) {
             <td style={styles.doseCount}>{state[2]} Totals:</td>
             <td style={styles.doseCount}>{remainingState + " / " + orderedState}</td>
           </tr>
-          : <tr></tr>
+          : false
          }
        </tbody>
 }
@@ -240,7 +244,7 @@ function renderPage(states, evusheldSites, dataUpdates) {
     var dataUpdatedLocalString = dataUpdated.toLocaleString('en-US', { weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
 
     var page = <div>
-      <div>
+      <div style={styles.centered}>
         <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
         <select style={styles.mediumFont} id='chooseState' value={state_filter !== null ? state_filter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
           <option value="">Choose State</option>
@@ -252,23 +256,24 @@ function renderPage(states, evusheldSites, dataUpdates) {
           [latest data published by healthdata.gov: {dataUpdatedLocalString}]
         </div>
         <div onClick={mapClick} style={styles.mapDiv}>
-          <MapChart id='mapChart' style />
+          <MapChart id='mapChart' />
         </div>
-        </div>
+        
         <div style={styles.smallerFont}>
           ( or view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> )
         </div>
-        <div>
-            { 
-              GetStateDetails(states.data, evusheldSites.data)
-            }
-        </div>
-        <div style={styles.smallerFont}>&nbsp;</div>
-        <div style={styles.smallerFont}>
-          Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> | 
-          Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">Evusheld data fetching</a>
-        </div>
       </div>
+      <div>
+          { 
+            GetStateDetails(states.data, evusheldSites.data)
+          }
+      </div>
+      <div style={styles.smallerFont}>&nbsp;</div>
+      <div style={styles.smallerFont}>
+        Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> | 
+        Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">Evusheld data fetching</a>
+      </div>
+    </div>
 
     ReactDOM.render(page, document.getElementById('root'));
   }

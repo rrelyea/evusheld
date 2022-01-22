@@ -10,6 +10,26 @@ import {
 
 import allStates from "./data/allstates.json";
 
+const stateStyle = {
+  default: {
+      outline: 'none',
+      fill: '#DDD',
+  },
+  hover: {
+      outline: 'none',
+      fill: 'lightgreen',
+  },
+  pressed: {
+      outline: 'none',
+      fill: 'greenyellow',
+  }
+}
+const styles = {
+  text: {
+    pointerEvents: 'none',
+  }
+}
+
 const geoUrl = "https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json";
 
 const offsets = {
@@ -27,17 +47,20 @@ const offsets = {
 const MapChart = () => {
   return (
     <ComposableMap projection="geoAlbersUsa">
-      <Geographies geography={geoUrl}  id="mapGeographies">
+      <Geographies geography={geoUrl} id="mapGeographies">
         {({ geographies }) => (
           <>
-            {geographies.map(geo => (
+            {geographies.map(geo => {
+            return (
               <Geography
                 key={geo.rsmKey}
                 stroke="#FFF"
                 geography={geo}
-                fill="#DDD"
+                style={stateStyle}
               />
-            ))}
+            )
+            }
+            )}
             {geographies.map(geo => {
               const centroid = geoCentroid(geo);
               const cur = allStates.find(s => s.val === geo.id);
@@ -48,7 +71,7 @@ const MapChart = () => {
                     centroid[0] < -67 &&
                     (Object.keys(offsets).indexOf(cur.id) === -1 ? (
                       <Marker coordinates={centroid}>
-                        <text y="2" fontSize={14} textAnchor="middle">
+                        <text y="2" fontSize={14} textAnchor="middle" style={styles.text}>
                           {cur.id}
                         </text>
                       </Marker>
@@ -58,7 +81,7 @@ const MapChart = () => {
                         dx={offsets[cur.id][0]}
                         dy={offsets[cur.id][1]}
                       >
-                        <text x={4} fontSize={14} alignmentBaseline="middle">
+                        <text x={4} fontSize={14} alignmentBaseline="middle" style={styles.text}>
                           {cur.id}
                         </text>
                       </Annotation>
