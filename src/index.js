@@ -60,6 +60,16 @@ const styles = {
   even: {
     background: '#f1ec90',
   },
+  stateInfo: {
+    backgroundColor: '#f1bb90',
+    textAlign: 'left',
+    paddingLeft: '10px',
+  },
+  infoLabels: {
+    backgroundColor: '#f1bb90',
+    textAlign: 'right',
+    paddingRight: '10px',
+  },
   totals: {
     lineHeight: '60px',
     padding: '0 0',
@@ -91,15 +101,16 @@ function GetStateDetails(states, providers) {
   })
   if (state_filter !== "")
   {
-    return (<table style={styles.providerTable}>
-      <thead>
-      <tr>
-        <th style={styles.th}>State / County / City</th>
-        <th style={styles.th}>Provider / Address1 / Address2 / ZipCode</th>
-        <th style={styles.th}>Availalble / Allotted</th>
-      </tr>
-      </thead>
-      {StateDetails}
+    return (
+      <table style={styles.providerTable}>
+        <thead>
+        <tr>
+          <th style={styles.th}>State / County / City</th>
+          <th style={styles.th}>Provider / Address1 / Address2 / ZipCode</th>
+          <th style={styles.th}>Availalble / Allotted</th>
+        </tr>
+        </thead>
+        {StateDetails}
       </table>);
   }
   else
@@ -138,8 +149,26 @@ function GetProviderDetails(state, index, providers) {
   var lastCityStyle = null;
   var remainingState = 0;
   var orderedState = 0;
+
   return <tbody>
-       { providers.map((provider, index) => {
+             { state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
+          <tr>
+            <td style={styles.infoLabels}>
+              {state[2]} Links:
+            </td>
+            <td style={styles.stateInfo}>
+              <div><a href={"https://"+state[1]}>{state[2] + " (" + state[3] + ")"}</a></div>
+              <div><a href={"https://"+state[0]}>{state[2]} Health Department</a></div>
+              <div><a href={state[7]}>{state[7] != "" ? "Search health dept site for 'evusheld'" : ""}</a></div>
+              <div><a href={"https://twitter.com/"+state[4]}>{state[2]} Health Department Twitter</a></div>
+              <div>{state[5] != "" ? "Email: " + state[5] : ""}</div> 
+              <div>{state[5] != "" ? "Phone: " + state[6] : ""}</div> 
+            </td>
+          </tr>
+          : false
+         }
+       {
+        providers.map((provider, index) => {
           // skip blank lines
           if (provider.length === 1) 
           {
@@ -152,7 +181,7 @@ function GetProviderDetails(state, index, providers) {
           var state_code = state[3] !== null ? state[3].trim() : state[3];
           var county = provider[4] !== null ? provider[4].trim() : provider[4];
           var city = provider[3] !== null ? provider[3].trim() : provider[3];
-          
+
           if (provider_state === state_code) {
             if (lastCity !== toTitleCase(city)) {
               lastCity = toTitleCase(city);
@@ -226,10 +255,16 @@ function renderPage(states, evusheldSites, dataUpdates) {
       state_code = cur.id;
     }
 
+    var chooseState = document.getElementById('chooseState');
+
     if (state_code !== null) {
-      var chooseState = document.getElementById('chooseState');
       chooseState.value = state_code;
       navigateToState(state_code);  
+    }
+    else
+    {
+      chooseState.value = "ChooseState";
+      navigateToState("");
     }
   }
 
@@ -249,13 +284,13 @@ function renderPage(states, evusheldSites, dataUpdates) {
         <div style={styles.centered}>
           <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
           <select style={styles.mediumFont} id='chooseState' value={state_filter !== null ? state_filter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
-            <option value="">Choose State</option>
+            <option value="ChooseState">Choose State</option>
             {states.data.map((state,index) => 
               <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
             )} 
           </select>
           <div style={styles.smallerFont}>
-            [latest data published by <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>: {dataUpdatedLocalString}]
+            [latest data published at <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>: {dataUpdatedLocalString}]
           </div>
           <div onClick={mapClick} style={styles.mapDiv}>
             <MapChart id='mapChart' />
@@ -292,7 +327,10 @@ Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history
 });
 
 var states = null;
-Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/state-health-departments.csv", {
+
+var currentTime = new Date();
+var urlSuffix = currentTime.getMinutes() + "-" + currentTime.getSeconds();
+Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/state-health-departments.csv?"+urlSuffix, {
   download: true,
   complete: function(stateResults) {
     states = stateResults;
@@ -309,7 +347,6 @@ Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history
   }
 });
 
-  
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
