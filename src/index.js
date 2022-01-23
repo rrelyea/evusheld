@@ -154,15 +154,14 @@ function GetProviderDetails(state, index, providers) {
              { state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
           <tr>
             <td style={styles.infoLabels}>
-              {state[2]} Links:
+              {state[2]} Health Dept Links:
             </td>
-            <td style={styles.stateInfo}>
-              <div><a href={"https://"+state[1]}>{state[2] + " (" + state[3] + ")"}</a></div>
-              <div><a href={"https://"+state[0]}>{state[2]} Health Department</a></div>
-              <div><a href={state[7]}>{state[7] != "" ? "Search health dept site for 'evusheld'" : ""}</a></div>
-              <div><a href={"https://twitter.com/"+state[4]}>{state[2]} Health Department Twitter</a></div>
-              <div>{state[5] != "" ? "Email: " + state[5] : ""}</div> 
-              <div>{state[5] != "" ? "Phone: " + state[6] : ""}</div> 
+            <td style={styles.stateInfo} colSpan='2'>
+              <a href={"https://"+state[0]}>{state[0]}</a>
+              <span>{state[7] != "" ? <span>&nbsp;| <a href={state[7]}>'Evusheld' search</a></span> : false }</span>
+              <span>{state[5] != "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
+              <span>{state[6] != "" ? " | " + state[6] : ""}</span> 
+              <span>{state[4] != "" ? <span> | <a href={"https://twitter.com/"+state[4]}>{'@'+state[4]}</a></span> : false } </span> 
             </td>
           </tr>
           : false
