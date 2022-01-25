@@ -158,7 +158,7 @@ function GetProviderDetails(state, index, providers) {
             </td>
             <td style={styles.stateInfo} colSpan='2'>
               <a href={"https://"+state[0]}>{state[0]}</a>
-              <span>{state[7] != "" ? <span>&nbsp;| <a href={state[7]}>'Evusheld' search</a></span> : false }</span>
+              <span>{state[7] != "" ? <span>&nbsp;| <a href={'https://'+state[7]}>'Evusheld' search</a></span> : false }</span>
               <span>{state[5] != "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
               <span>{state[6] != "" ? " | " + state[6] : ""}</span> 
               <span>{state[4] != "" ? <span> | <a href={"https://twitter.com/"+state[4]}>{'@'+state[4]}</a></span> : false } </span> 
@@ -208,7 +208,7 @@ function GetProviderDetails(state, index, providers) {
                       </td>
                       <td style={styles.td}>
                         <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
-                        <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> alloted @{toDate(provider[9])}</span></div>
+                        <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
                         <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
                         <div style={styles.tinyFont}>&nbsp;</div>
                       </td>
