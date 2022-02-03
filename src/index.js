@@ -107,7 +107,7 @@ function GetStateDetails(states, providers) {
         <tr>
           <th style={styles.th}>State / County / City</th>
           <th style={styles.th}>Provider / Address1 / Address2 / ZipCode</th>
-          <th style={styles.th}>Availalble / Allotted</th>
+          <th style={styles.th}>Available / Allotted</th>
         </tr>
         </thead>
         {StateDetails}
