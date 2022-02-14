@@ -164,9 +164,9 @@ function GetProviderDetails(state, index, providers) {
               <span>{state[7] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7],'Evusheld')}>'Evusheld' search</a></span> : false }</span>
               <span>{state[8] !== ""? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+state[8]}>Covid Info</a></span> : false }</span>
               <span>{state[0] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={"https://"+state[0]}>{state[0]}</a></span> : false }</span>
-              <span>{state[5] != "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
-              <span>{state[6] != "" ? " | " + state[6] : ""}</span> 
-              <span>{state[4] != "" ? <span> | <a href={"https://twitter.com/"+state[4]}>{'@'+state[4]}</a></span> : false } </span> 
+              <span>{state[5] !== "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
+              <span>{state[6] !== "" ? " | " + state[6] : ""}</span> 
+              <span>{state[4] !== "" ? <span> | <a href={"https://twitter.com/"+state[4]}>{'@'+state[4]}</a></span> : false } </span> 
             </td>
           </tr>
           : false
@@ -294,7 +294,7 @@ function renderPage(states, evusheldSites, dataUpdates) {
             )} 
           </select>
           <div style={styles.smallerFont}>
-            [latest data published at <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>: {dataUpdatedLocalString}]
+            [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdatedLocalString}]
           </div>
           <div onClick={mapClick} style={styles.mapDiv}>
             <MapChart id='mapChart' />
@@ -312,7 +312,7 @@ function renderPage(states, evusheldSites, dataUpdates) {
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerFont}>
             Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> | 
-            Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">Evusheld data fetching</a>
+            Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">data fetching</a>
           </div>
         </div>
       </div>
