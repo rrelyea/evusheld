@@ -78,6 +78,7 @@ const styles = {
 }
 
 var state_filter = "";
+var daysnotreported_filter = "";
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -153,7 +154,11 @@ function GetProviderDetails(state, index, providers) {
   var lastCityStyle = null;
   var remainingState = 0;
   var orderedState = 0;
+  var providerCountState = 0;
   var firstLink = 0;
+  var d = new Date();
+  if (daysnotreported_filter !== "") d.setDate(d.getDate() - toNumber(daysnotreported_filter));
+  
   return <tbody>
              { state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
           <tr>
@@ -186,7 +191,9 @@ function GetProviderDetails(state, index, providers) {
           var county = provider[4] !== null ? provider[4].trim() : provider[4];
           var city = provider[3] !== null ? provider[3].trim() : provider[3];
 
-          if (provider_state === state_code) {
+          if (provider_state === state_code &&
+                (daysnotreported_filter === "" || d > new Date(provider[13]))
+             ) {
             if (lastCity !== toTitleCase(city)) {
               lastCity = toTitleCase(city);
               countyCity = state_code + " / " + toTitleCase(county) + " / " + toTitleCase(city);
@@ -200,6 +207,7 @@ function GetProviderDetails(state, index, providers) {
             var npi = provider[15].trim() === "" ? "" : "NPI# " + parseInt(provider[15]);
             remainingState += remaining === "--" ? 0 : parseInt(remaining);
             orderedState += ordered === "--" ? 0 : parseInt(ordered);
+            providerCountState += 1;
             return   <tr key={state_code+"-"+index.toString()} style={lastCityStyle}>
                         <td style={styles.td}>
                           <div style={styles.countyCity}>{countyCity}</div>
@@ -224,8 +232,8 @@ function GetProviderDetails(state, index, providers) {
        )}
          { state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
           <tr style={styles.totals}>
-            <td style={styles.totals}>&nbsp;</td>
-            <td style={styles.doseCount}>{state[2]} Totals:</td>
+            <td style={styles.totals}>{state[2]} Totals:</td>
+            <td style={styles.doseCount}>{providerCountState} providers</td>
             <td style={styles.doseCount}>{remainingState + " / " + orderedState}</td>
           </tr>
           : false
@@ -238,6 +246,20 @@ function navigateToState(state) {
   params.set('state', state);
   window.history.replaceState({}, "Evusheld (" + state + ")", `${window.location.pathname}?${params.toString()}`);
   renderPage(states, evusheldSites, dataUpdates);
+}
+
+function showAllProviders(e) {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('daysnotreported')) params.delete('daysnotreported');
+  window.history.replaceState({}, "Evusheld", `${window.location.pathname}?${params.toString()}`);
+  daysnotreported_filter = "";
+  renderPage(states, evusheldSites, dataUpdates);
+}
+
+function ShowdaysnotreportedBanner(days) {
+  if (days !== "") {
+    return <>Showing only those providers who have NOT reported their inventory to HHS in {days} or more days <button onClick={(e)=>showAllProviders(e)}>show all</button></>
+  }
 }
 
 function renderPage(states, evusheldSites, dataUpdates) {
@@ -280,6 +302,10 @@ function renderPage(states, evusheldSites, dataUpdates) {
       state_filter = urlParams.get('state').toUpperCase();
     }
 
+    if (urlParams.has('daysnotreported')) {
+      daysnotreported_filter = urlParams.get('daysnotreported');
+    }
+
     var dataUpdated = new Date(dataUpdates.data[0][0]);
     var dataUpdatedLocalString = dataUpdated.toLocaleString('en-US', { weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
 
@@ -303,11 +329,16 @@ function renderPage(states, evusheldSites, dataUpdates) {
           <div style={styles.smallerFont}>
             ( or view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> )
           </div>
+          <div>
+            {
+              ShowdaysnotreportedBanner(daysnotreported_filter)
+            }
+          </div>
           <div style={styles.smallerFont}>&nbsp;</div>
           <div>
-              { 
-                GetStateDetails(states.data, evusheldSites.data)
-              }
+            { 
+              GetStateDetails(states.data, evusheldSites.data)
+            }
           </div>
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerFont}>
@@ -332,10 +363,11 @@ Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history
 });
 
 var states = null;
+var baseUri = "https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/";
 
 var currentTime = new Date();
 var urlSuffix = currentTime.getMinutes() + "-" + currentTime.getSeconds();
-Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/state-health-departments.csv?"+urlSuffix, {
+Papa.parse(baseUri + "state-health-departments.csv?"+urlSuffix, {
   download: true,
   complete: function(stateResults) {
     states = stateResults;
@@ -344,7 +376,7 @@ Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history
 });
 
 var dataUpdates = null;
-Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/evusheld-data-updates.log", {
+Papa.parse(baseUri + "data/evusheld-data-updates.log", {
   download: true,
   complete: function(updates) {
     dataUpdates = updates;
