@@ -158,7 +158,7 @@ function GetProviderDetails(state, index, providers) {
   var firstLink = 0;
   var d = new Date();
   if (daysnotreported_filter !== "") d.setDate(d.getDate() - toNumber(daysnotreported_filter));
-  
+
   return <tbody>
              { state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
           <tr>
@@ -190,10 +190,17 @@ function GetProviderDetails(state, index, providers) {
           var state_code = state[3] !== null ? state[3].trim() : state[3];
           var county = provider[4] !== null ? provider[4].trim() : provider[4];
           var city = provider[3] !== null ? provider[3].trim() : provider[3];
+          var d2 = null;
+          if (provider[13] !== "" && provider[10] !== "") { // no reported date, but did get delivery
+            d2 = new Date(provider[10]);
+          }
 
           if (provider_state === state_code &&
-                (daysnotreported_filter === "" || d > new Date(provider[13]))
-             ) {
+                (daysnotreported_filter === ""
+                  || d > new Date(provider[13])
+                  || (provider[13] === "" && provider[10] !== "" && d > d2)
+                  )
+             ) { 
             if (lastCity !== toTitleCase(city)) {
               lastCity = toTitleCase(city);
               countyCity = state_code + " / " + toTitleCase(county) + " / " + toTitleCase(city);
