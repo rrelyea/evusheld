@@ -77,7 +77,11 @@ const styles = {
   },
 }
 
-var state_filter = "";
+var stateFilter = null;
+var countyFilter = null;
+var cityFilter = null;
+var zipFilter = null;
+var providerFilter = null;
 var daysnotreported_filter = "";
 
 function toTitleCase(str) {
@@ -100,7 +104,7 @@ function GetStateDetails(states, providers) {
   const StateDetails = states.map((state,index) => {
     return GetProviderDetails(state, index, providers);
   })
-  if (state_filter !== "")
+  if (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null)
   {
     return (
       <table style={styles.providerTable}>
@@ -137,93 +141,104 @@ function SwapKeyword(url, keyword) {
 }
 
 function GetProviderDetails(state, index, providers) {
-  switch (state_filter) {
-    case null:
-    case "":
-      return null
-    case "ALL":
-    case state[3].trim():
-      break;
-    default:
-      return null;
-  }
-
   if (state[3].trim() === "") return null;
 
-  var lastCity = "";
-  var lastCityStyle = null;
-  var remainingState = 0;
-  var orderedState = 0;
-  var providerCountState = 0;
+  var remainingTotals = 0;
+  var orderedTotals = 0;
+  var providerCountTotals = 0;
   var firstLink = 0;
   var d = new Date();
   if (daysnotreported_filter !== "") d.setDate(d.getDate() - toNumber(daysnotreported_filter));
 
-  return <tbody>
-             { state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
-          <tr>
-            <td style={styles.infoLabels}>
-              {state[2]} Health Dept Links:
-            </td>
-            <td style={styles.stateInfo} colSpan='2'>
-              <span>{state[7] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7],'Evusheld')}>'Evusheld' search</a></span> : false }</span>
-              <span>{state[8] !== ""? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+state[8]}>Covid Info</a></span> : false }</span>
-              <span>{state[0] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={"https://"+state[0]}>{state[0]}</a></span> : false }</span>
-              <span>{state[5] !== "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
-              <span>{state[6] !== "" ? " | " + state[6] : ""}</span> 
-              <span>{state[4] !== "" ? <span> | <a href={"https://twitter.com/"+state[4]}>{'@'+state[4]}</a></span> : false } </span> 
-            </td>
-          </tr>
-          : false
-         }
-       {
-        providers.map((provider, index) => {
-          // skip blank lines
-          if (provider.length === 1) 
-          {
-            return false;
-          }
+  var state_code = state[3] !== null ? state[3].trim() : state[3];
 
-          const provider_state = provider[5].trim();
-          var countyCity = null;
-          var provider_x = null;
-          var state_code = state[3] !== null ? state[3].trim() : state[3];
-          var county = provider[4] !== null ? provider[4].trim() : provider[4];
-          var city = provider[3] !== null ? provider[3].trim() : provider[3];
-          var d2 = null;
-          if (provider[13] !== "" && provider[10] !== "") { // no reported date, but did get delivery
-            d2 = new Date(provider[10]);
-          }
+  var header = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
+    <tr>
+      <td style={styles.infoLabels}>
+        {state[2]} Health Dept Links:
+      </td>
+      <td style={styles.stateInfo} colSpan='2'>
+        <span>{state[7] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7],'Evusheld')}>'Evusheld' search</a></span> : false }</span>
+        <span>{state[8] !== ""? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+state[8]}>Covid Info</a></span> : false }</span>
+        <span>{state[0] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={"https://"+state[0]}>{state[0]}</a></span> : false }</span>
+        <span>{state[5] !== "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
+        <span>{state[6] !== "" ? " | " + state[6] : ""}</span> 
+        <span>{state[4] !== "" ? <span> | <a href={"https://twitter.com/"+state[4]}>{'@'+state[4]}</a></span> : false } </span> 
+      </td>
+    </tr>
+    : false;
 
-          if (provider_state === state_code &&
-                (daysnotreported_filter === ""
-                  || d > new Date(provider[13])
-                  || (provider[13] === "" && provider[10] !== "" && d > d2)
-                  )
-             ) { 
-            if (lastCity !== toTitleCase(city)) {
-              lastCity = toTitleCase(city);
-              countyCity = state_code + " / " + toTitleCase(county) + " / " + toTitleCase(city);
+  var lastCity = "";
+  var lastCounty = "";
+  var lastState = "";
+  var lastCityStyle = null;
+  var cityMarkup = null;
+  var providerList = providers.map((provider, index) => {
+    // ignore blank lines in provider file
+    if (provider.length === 1) 
+    {
+      return false;
+    }
+
+    const provider_state = provider[5].trim();
+    var provider_x = null;
+    var county = provider[4] !== null ? provider[4].trim() : provider[4];
+    var city = provider[3] !== null ? provider[3].trim() : provider[3];
+    var d2 = null;
+    if (provider[13] !== "" && provider[10] !== "") { // no reported date, but did get delivery
+      d2 = new Date(provider[10]);
+    }
+
+    if (provider_state === state_code &&
+          (daysnotreported_filter === ""
+            || d > new Date(provider[13])
+            || (provider[13] === "" && provider[10] !== "" && d > d2)
+            )
+       ) { 
+      
+      if ((stateFilter === null || stateFilter === state_code) 
+         && (zipFilter === null || zipFilter === provider[6].substring(0,5))
+         && (countyFilter === null || countyFilter === county.toUpperCase())
+         && (cityFilter === null || cityFilter === city.toUpperCase())
+         ) {
+          
+          var providerUpper = provider[0].replaceAll('-',' ').toUpperCase();
+          provider_x = toTitleCase(provider[0]);
+          if (providerFilter === null || providerUpper.includes(providerFilter) ) {
+            var linkToProvider = "?zip=" + provider[6].substring(0,5) + "&provider=" + provider_x.replaceAll(' ', '-');
+            var linkToState = "?state=" + state_code;
+            var linkToZip = linkToState + "&zip=" + provider[6].substring(0,5);
+            var linkToCounty = linkToState + "&county=" + county;
+            var linkToCity = linkToState + "&city=" + city;
+            var firstRowOfCity = lastCity !== toTitleCase(city) || lastCounty !== county || lastState !== state_code;
+            if (firstRowOfCity) {
+              lastCity = toTitleCase(city); 
+              lastState = state_code;
+              lastCounty = county;
+              cityMarkup = 
+              <div style={styles.countyCity}>
+                <a href={linkToState}>{state_code}</a> / <a href={linkToCounty}>{toTitleCase(county)}</a> / <a href={linkToCity}>{toTitleCase(city)}</a>
+              </div>;
               lastCityStyle = lastCityStyle === styles.odd ? styles.even : styles.odd;
+            } else {
+              cityMarkup = null;
             }
-            
-            provider_x = toTitleCase(provider[0]);
-
             var remaining = toNumber(provider[12]);
             var ordered = toNumber(provider[11]);
             var npi = provider[15].trim() === "" ? "" : "NPI# " + parseInt(provider[15]);
-            remainingState += remaining === "--" ? 0 : parseInt(remaining);
-            orderedState += ordered === "--" ? 0 : parseInt(ordered);
-            providerCountState += 1;
-            return   <tr key={state_code+"-"+index.toString()} style={lastCityStyle}>
-                        <td style={styles.td}>
-                          <div style={styles.countyCity}>{countyCity}</div>
-                        </td>
+            remainingTotals += remaining === "--" ? 0 : parseInt(remaining);
+            orderedTotals += ordered === "--" ? 0 : parseInt(ordered);
+            providerCountTotals += 1;
+
+            return <tr key={state_code+"-"+index.toString()} style={lastCityStyle}>
                       <td style={styles.td}>
-                        <div style={styles.mediumFont}>{provider_x}</div>
+                        {cityMarkup}
+                      </td>
+                      <td style={styles.td}>
+                        <div style={styles.mediumFont}><a href={linkToProvider}>{provider_x}</a></div>
                         <div>{provider[1]}</div>
                         <div>{provider[2]}</div>
-                        <div>{provider[6]}</div>
+                        <div><a href={linkToZip}>{provider[6]}</a></div>
                         <div>{npi}</div>
                       </td>
                       <td style={styles.td}>
@@ -232,25 +247,35 @@ function GetProviderDetails(state, index, providers) {
                         <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
                         <div style={styles.tinyFont}>&nbsp;</div>
                       </td>
-                      </tr>
-          }
-
+                    </tr>
         }
-       )}
-         { state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
-          <tr style={styles.totals}>
-            <td style={styles.totals}>{state[2]} Totals:</td>
-            <td style={styles.doseCount}>{providerCountState} providers</td>
-            <td style={styles.doseCount}>{remainingState + " / " + orderedState}</td>
-          </tr>
-          : false
-         }
+      }
+    }
+  });
+
+  var footer = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
+  <tr style={styles.totals}>
+    <td style={styles.totals}>{cityFilter !== null ? "City":(countyFilter !== null?"County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
+    <td style={styles.doseCount}>{providerCountTotals} providers</td>
+    <td style={styles.doseCount}>{remainingTotals + " / " + orderedTotals}</td>
+  </tr>
+  : false;
+
+  return <tbody>
+       { stateFilter !== null && state_code === stateFilter ? header : false }
+       { providerList }
+       { (stateFilter !== null && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter !== null) ? footer : false}
        </tbody>
 }
 
 function navigateToState(state) {
   const params = new URLSearchParams(window.location.search);
   params.set('state', state);
+  if (params.has('county')) params.delete('county');
+  if (params.has('city')) params.delete('city');
+  if (params.has('zip')) params.delete('zip');
+  if (params.has('provider')) params.delete('provider');
+
   window.history.replaceState({}, "Evusheld (" + state + ")", `${window.location.pathname}?${params.toString()}`);
   renderPage(states, evusheldSites, dataUpdates);
 }
@@ -305,10 +330,12 @@ function renderPage(states, evusheldSites, dataUpdates) {
   {
     var urlParams = new URLSearchParams(window.location.search);
 
-    if (urlParams.has('state')) {
-      state_filter = urlParams.get('state').toUpperCase();
-    }
-
+    stateFilter = urlParams.has('state') ? urlParams.get('state').toUpperCase() : null;
+    countyFilter = urlParams.has('county') ? urlParams.get('county').toUpperCase() : null;
+    cityFilter = urlParams.has('city') ? urlParams.get('city').toUpperCase() : null;
+    zipFilter = urlParams.has('zip') ? urlParams.get('zip') : null;
+    providerFilter = urlParams.has('provider') ? urlParams.get('provider').toUpperCase().replaceAll('-',' ') : null;
+    
     if (urlParams.has('daysnotreported')) {
       daysnotreported_filter = urlParams.get('daysnotreported');
     }
@@ -320,7 +347,7 @@ function renderPage(states, evusheldSites, dataUpdates) {
       <div>
         <div style={styles.centered}>
           <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
-          <select style={styles.mediumFont} id='chooseState' value={state_filter !== null ? state_filter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
+          <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
             <option value="ChooseState">Choose State</option>
             {states.data.map((state,index) => 
               <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
