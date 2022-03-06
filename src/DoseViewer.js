@@ -88,7 +88,7 @@ class DoseViewer extends React.Component {
             var allotted = this.GetDoses(this.state.doseInfo[i][5]);
 
             if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null && (available !== null || allotted != null)) {
-              this.state.chartData.labels[j] = reportDate;
+              this.state.chartData.labels[j] = this.props.mini !== 'true' ? reportDate : "";
               this.state.availableData[j] = available;
               this.state.allottedData[j] = allotted;
               j = j + 1;
@@ -97,14 +97,14 @@ class DoseViewer extends React.Component {
 
         this.state.chartData.datasets = [{
           data: this.state.availableData,
-          label: "Doses Available (in stock)",
+          label: this.props.mini !== 'true' ? "Doses Available (in stock)" : this.props.available + " Avail",
           borderColor: '#00DD00',
           backgroundColor: '#00FF00',
           fill: false,
         },
         {
           data: this.state.allottedData,
-          label: "Cumulative Allotted (from State)",
+          label: this.props.mini !== 'true' ? "Cumulative Allotted (from State)" : this.props.allotted + " Allotted",
           borderColor: '#3e95cd',
           backgroundColor: 'lightblue',
           fill: false,
@@ -122,7 +122,7 @@ class DoseViewer extends React.Component {
         return (
         <>
           <div id='doses' style={this.style}>
-            <Chart type='line' id='chart' height='300' data={this.state.chartData} options={this.state.chartOptions} />
+            <Chart type='line' id='chart' height={this.props.mini === 'true' ? 150 : 300} data={this.state.chartData} options={this.state.chartOptions} />
           </div>
         </>
         );

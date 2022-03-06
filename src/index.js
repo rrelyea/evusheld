@@ -208,7 +208,8 @@ function GetProviderDetails(state, index, providers) {
           if (providerFilter === null || providerUpper.includes(providerFilter) ) {
             var linkToProvider = "?zip=" + provider[6].substring(0,5) + "&provider=" + provider_x.replaceAll(' ', '-');
             var linkToState = "?state=" + state_code;
-            var linkToZip = linkToState + "&zip=" + provider[6].substring(0,5);
+            var zipCode = provider[6].substring(0,5);
+            var linkToZip = linkToState + "&zip=" + zipCode;
             var linkToCounty = linkToState + "&county=" + county;
             var linkToCity = linkToState + "&city=" + city;
             var firstRowOfCity = lastCity !== toTitleCase(city) || lastCounty !== county || lastState !== state_code;
@@ -242,14 +243,21 @@ function GetProviderDetails(state, index, providers) {
                 <div style={styles.mediumFont}><a href={linkToProvider}>{provider_x}</a></div>
                 <div>{provider[1]}</div>
                 <div>{provider[2]}</div>
-                <div><a href={linkToZip}>{provider[6]}</a></div>
+                <div>{provider[6]}</div>
                 <div>{npi}</div>
               </td>
               <td style={styles.td}>
-                <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
-                <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
-                <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
-                <div style={styles.tinyFont}>&nbsp;</div>
+                { zipFilter !== null && providerFilter !== null ? (<>
+                  <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
+                  <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
+                  <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
+                  <div style={styles.tinyFont}>&nbsp;</div>
+                </>) :
+                (
+                <>
+                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={remaining} allotted={ordered} />
+                </>
+                )}
               </td>
             </tr>
             {zipFilter !== null && providerFilter !== null ?
