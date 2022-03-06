@@ -4,6 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom'
 import MapChart from "./MapChart";
 import allStates from "./data/allstates.json";
+import DoseViewer from './DoseViewer.js'
 
 const styles = {
   countyCity: {
@@ -229,25 +230,38 @@ function GetProviderDetails(state, index, providers) {
             remainingTotals += remaining === "--" ? 0 : parseInt(remaining);
             orderedTotals += ordered === "--" ? 0 : parseInt(ordered);
             providerCountTotals += 1;
+            if (zipFilter !== null && providerFilter !== null) {
 
-            return <tr key={state_code+"-"+index.toString()} style={lastCityStyle}>
-                      <td style={styles.td}>
-                        {cityMarkup}
-                      </td>
-                      <td style={styles.td}>
-                        <div style={styles.mediumFont}><a href={linkToProvider}>{provider_x}</a></div>
-                        <div>{provider[1]}</div>
-                        <div>{provider[2]}</div>
-                        <div><a href={linkToZip}>{provider[6]}</a></div>
-                        <div>{npi}</div>
-                      </td>
-                      <td style={styles.td}>
-                        <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
-                        <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
-                        <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
-                        <div style={styles.tinyFont}>&nbsp;</div>
-                      </td>
-                    </tr>
+            }
+
+            return <><tr key={state_code+"-"+index.toString()} style={lastCityStyle}>
+              <td style={styles.td}>
+                {cityMarkup}
+              </td>
+              <td style={styles.td}>
+                <div style={styles.mediumFont}><a href={linkToProvider}>{provider_x}</a></div>
+                <div>{provider[1]}</div>
+                <div>{provider[2]}</div>
+                <div><a href={linkToZip}>{provider[6]}</a></div>
+                <div>{npi}</div>
+              </td>
+              <td style={styles.td}>
+                <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
+                <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
+                <div style={styles.tinyFont}>&nbsp;</div>
+              </td>
+            </tr>
+            {zipFilter !== null && providerFilter !== null ?
+              <tr style={lastCityStyle}>
+                <td colSpan='3'>
+                  <DoseViewer zipCode={zipFilter} provider={providerUpper} />
+                </td>
+              </tr>
+              :false
+            }
+            </>
+          
         }
       }
     }
