@@ -47,6 +47,8 @@ class DoseViewer extends React.Component {
         }
     }
 
+    baseUrl = "https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/dose-details/";
+
     async toCsv(uri) {
       return new Promise((resolve, reject) => {
         Papa.parse(uri, {
@@ -62,8 +64,7 @@ class DoseViewer extends React.Component {
     }
 
     async loadDoseInfo() {
-        var baseUrl = "https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/dose-details/";
-        this.setState({doseInfo:await this.toCsv(baseUrl + this.props.zipCode + ".csv")})
+        this.setState({doseInfo:await this.toCsv(this.baseUrl + this.props.zipCode + ".csv")})
     }
 
     GetDate(date,start=0) {
@@ -124,6 +125,9 @@ class DoseViewer extends React.Component {
           <div id='doses' style={this.style}>
             <Chart type='line' id='chart' height={this.props.mini === 'true' ? 150 : 300} data={this.state.chartData} options={this.state.chartOptions} />
           </div>
+          { this.props.mini !== 'true' ? 
+          <div><br/><a href={this.baseUrl + this.props.zipCode + ".csv"}>download available and allotted data ({this.props.zipCode+".csv"})</a></div>
+           : false}
         </>
         );
       }
