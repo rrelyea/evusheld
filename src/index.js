@@ -29,6 +29,9 @@ const styles = {
   smallerFont: {
     fontSize: '10pt'
   },
+  eightPointFont: {
+    fontSize: '8pt'
+  },
   tinyFont: {
     fontSize: '5pt'
   },  
@@ -44,6 +47,13 @@ const styles = {
     textAlign: 'center',
   },
   td: {
+    width: 'auto',
+    verticalAlign: 'top',
+    wordWrap: 'break-word',
+  },
+  tdProvider: {
+    width: '1%',
+    whiteSpace: 'nowrap',
     verticalAlign: 'top',
     wordWrap: 'break-word',
   },
@@ -111,9 +121,9 @@ function GetStateDetails(states, providers) {
       <table style={styles.providerTable}>
         <thead>
         <tr>
-          <th style={styles.th}>State / County / City</th>
-          <th style={styles.th}>Provider / Address1 / Address2 / ZipCode</th>
-          <th style={styles.th}>Available / Allotted</th>
+          <th style={styles.th}>State - County - City</th>
+          <th style={styles.th}>Provider</th>
+          <th style={styles.th}>Inventory</th>
         </tr>
         </thead>
         {StateDetails}
@@ -219,7 +229,7 @@ function GetProviderDetails(state, index, providers) {
               lastCounty = county;
               cityMarkup = 
               <div style={styles.countyCity}>
-                <a href={linkToState}>{state_code}</a> / <a href={linkToCounty}>{toTitleCase(county)}</a> / <a href={linkToCity}>{toTitleCase(city)}</a>
+                <a href={linkToState}>{state_code}</a> - <a href={linkToCounty}>{toTitleCase(county)}</a> - <a href={linkToCity}>{toTitleCase(city)}</a>
               </div>;
               lastCityStyle = lastCityStyle === styles.odd ? styles.even : styles.odd;
             } else {
@@ -236,14 +246,14 @@ function GetProviderDetails(state, index, providers) {
               <td style={styles.td}>
                 {cityMarkup}
               </td>
-              <td style={styles.td}>
+              <td style={styles.tdProvider}>
                 <div style={styles.mediumFont}>{provider_x}</div>
                 <div>{provider[1]}</div>
                 <div>{provider[2]}</div>
                 <div>{provider[6]}</div>
                 <div>{npi}</div>
-                <div>&nbsp;</div>
-                <div>{zipFilter === null && providerFilter === null ? <a href={linkToProvider} target="_blank">Inventory details</a> : false }</div>
+                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <a href={linkToProvider}>Inventory details</a> : false }</div>
+                <div style={styles.tinyFont}>&nbsp;</div>
               </td>
               <td style={styles.td}>
                 { zipFilter !== null && providerFilter !== null ? (<>
@@ -254,7 +264,7 @@ function GetProviderDetails(state, index, providers) {
                 </>) :
                 (
                 <>
-                <a href={linkToProvider} target="_blank">
+                <a href={linkToProvider}>
                   <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={remaining} allotted={ordered} />
                 </a>
                 </>
