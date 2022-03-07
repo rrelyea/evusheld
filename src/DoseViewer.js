@@ -13,6 +13,12 @@ import {
   } from "chart.js";
 import { Chart } from 'react-chartjs-2';
 
+const styles = {
+  smallText: {
+    fontSize: '8pt'
+  },
+}
+
 class DoseViewer extends React.Component {
     constructor(props) {
         super(props);
@@ -40,6 +46,7 @@ class DoseViewer extends React.Component {
                             font: {
                                 size: 10,
                                 },
+                            display: !(this.props.mini === 'true'),
                         }
                     }
                 },
@@ -82,6 +89,10 @@ class DoseViewer extends React.Component {
         await this.loadDoseInfo();
         
         var j = 0;
+        this.state.chartData.labels[j] = "";
+        this.state.availableData[j] = 0;
+        this.state.allottedData[j] = 0;
+        j = j + 1;
         for (var i = 0; i < this.state.doseInfo.length; i++) {
             var provider = this.state.doseInfo[i][2] !== undefined ? this.state.doseInfo[i][2].replaceAll('-', ' ') : null;
             var reportDate = this.GetDate(this.state.doseInfo[i][0], 5);
@@ -89,7 +100,7 @@ class DoseViewer extends React.Component {
             var allotted = this.GetDoses(this.state.doseInfo[i][5]);
 
             if (provider != null && provider.toUpperCase() === this.props.provider.toUpperCase() && reportDate !== null && (available !== null || allotted != null)) {
-              this.state.chartData.labels[j] = this.props.mini !== 'true' ? reportDate : "";
+              this.state.chartData.labels[j] = reportDate;
               this.state.availableData[j] = available;
               this.state.allottedData[j] = allotted;
               j = j + 1;
@@ -111,7 +122,6 @@ class DoseViewer extends React.Component {
           fill: false,
         }];
         this.setState({chartData:this.state.chartData});
-        this.setState({chartOptions:this.state.chartOptions})
       }
 
 
@@ -122,8 +132,8 @@ class DoseViewer extends React.Component {
     render() {
         return (
         <>
-          <div id='doses' style={this.style}>
-            <Chart type='line' id='chart' height={this.props.mini === 'true' ? 150 : 300} data={this.state.chartData} options={this.state.chartOptions} />
+          <div id='doses'>
+            <Chart type='line' id='chart' height={this.props.mini === 'true' ? 150 : 250} data={this.state.chartData} options={this.state.chartOptions} />
           </div>
           { this.props.mini !== 'true' ? 
           <div><br/><a href={this.baseUrl + this.props.zipCode + ".csv"}>download available and allotted data ({this.props.zipCode+".csv"})</a></div>

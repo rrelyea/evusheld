@@ -240,11 +240,13 @@ function GetProviderDetails(state, index, providers) {
                 {cityMarkup}
               </td>
               <td style={styles.td}>
-                <div style={styles.mediumFont}><a href={linkToProvider}>{provider_x}</a></div>
+                <div style={styles.mediumFont}>{provider_x}</div>
                 <div>{provider[1]}</div>
                 <div>{provider[2]}</div>
                 <div>{provider[6]}</div>
                 <div>{npi}</div>
+                <div>&nbsp;</div>
+                <div>{zipFilter === null && providerFilter === null ? <a href={linkToProvider} target="_blank">Inventory details</a> : false }</div>
               </td>
               <td style={styles.td}>
                 { zipFilter !== null && providerFilter !== null ? (<>
@@ -255,7 +257,9 @@ function GetProviderDetails(state, index, providers) {
                 </>) :
                 (
                 <>
+                <a href={linkToProvider} target="_blank">
                   <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={remaining} allotted={ordered} />
+                </a>
                 </>
                 )}
               </td>
@@ -368,6 +372,8 @@ function renderPage(states, evusheldSites, dataUpdates) {
     var page = 
       <div>
         <div style={styles.centered}>
+          {zipFilter === null && providerFilter === null ?
+          <>
           <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
           <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
             <option value="ChooseState">Choose State</option>
@@ -378,13 +384,14 @@ function renderPage(states, evusheldSites, dataUpdates) {
           <div style={styles.smallerFont}>
             [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdatedLocalString}]
           </div>
-          <div onClick={mapClick} style={styles.mapDiv}>
-            <MapChart id='mapChart' />
-          </div>
-          
+            <div onClick={mapClick} style={styles.mapDiv}>
+              <MapChart id='mapChart' />
+            </div>
           <div style={styles.smallerFont}>
             ( or view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> )
           </div>
+          </>
+          : false }
           <div>
             {
               ShowdaysnotreportedBanner(daysnotreported_filter)
