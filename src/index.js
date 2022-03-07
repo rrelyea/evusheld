@@ -91,7 +91,6 @@ const styles = {
     paddingRight: '10px',
   },
   totals: {
-    lineHeight: '60px',
     padding: '0 0',
     backgroundColor: '#f1bb90',
   },
