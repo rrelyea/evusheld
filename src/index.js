@@ -231,9 +231,6 @@ function GetProviderDetails(state, index, providers) {
             remainingTotals += remaining === "--" ? 0 : parseInt(remaining);
             orderedTotals += ordered === "--" ? 0 : parseInt(ordered);
             providerCountTotals += 1;
-            if (zipFilter !== null && providerFilter !== null) {
-
-            }
 
             return <><tr key={state_code+"-"+index.toString()} style={lastCityStyle}>
               <td style={styles.td}>
@@ -296,7 +293,7 @@ function GetProviderDetails(state, index, providers) {
 
 function navigateToState(state) {
   const params = new URLSearchParams(window.location.search);
-  params.set('state', state);
+  if (state !== "ChooseState") { params.set('state', state) } else if (params.has('state')) params.delete('state');
   if (params.has('county')) params.delete('county');
   if (params.has('city')) params.delete('city');
   if (params.has('zip')) params.delete('zip');
@@ -361,7 +358,16 @@ function renderPage(states, evusheldSites, dataUpdates) {
     cityFilter = urlParams.has('city') ? urlParams.get('city').toUpperCase() : null;
     zipFilter = urlParams.has('zip') ? urlParams.get('zip') : null;
     providerFilter = urlParams.has('provider') ? urlParams.get('provider').toUpperCase().replaceAll('-',' ') : null;
-    
+
+    if (zipFilter !== null && providerFilter !== null) {
+      document.title = toTitleCase(providerFilter);
+    } else {
+      if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " Evusheld";
+      else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " Evusheld";
+      else if (stateFilter !== null) document.title = stateFilter + " Evusheld";
+      else document.title = "Evusheld";
+    }
+
     if (urlParams.has('daysnotreported')) {
       daysnotreported_filter = urlParams.get('daysnotreported');
     }
