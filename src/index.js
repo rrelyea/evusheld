@@ -25,7 +25,11 @@ const styles = {
   },
   mediumFont: {
     fontSize: '14pt'
-  },  
+  },
+  smallerCentered: {
+    fontSize: '10pt',
+    textAlign: 'center',
+  },
   smallerFont: {
     fontSize: '10pt'
   },
@@ -47,15 +51,20 @@ const styles = {
     textAlign: 'center',
   },
   td: {
-    width: 'auto',
+    maxWidth: '100px',
+    verticalAlign: 'top',
+    wordWrap: 'break-word',
+  },
+  tdChart: {
+    maxWidth: '250px',
     verticalAlign: 'top',
     wordWrap: 'break-word',
   },
   tdProvider: {
-    width: '1%',
-    whiteSpace: 'nowrap',
+    maxWidth: '200px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
     verticalAlign: 'top',
-    wordWrap: 'break-word',
   },
   // table color theme started with primary color of #f1ec90 and used https://material.io/design/color/the-color-system.html#tools-for-picking-colors
   th: {
@@ -93,7 +102,6 @@ var countyFilter = null;
 var cityFilter = null;
 var zipFilter = null;
 var providerFilter = null;
-var daysnotreported_filter = "";
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -121,7 +129,7 @@ function GetStateDetails(states, providers) {
       <table style={styles.providerTable}>
         <thead>
         <tr>
-          <th style={styles.th}>State - County - City</th>
+          <th style={styles.th}>&nbsp;State - County - City&nbsp;</th>
           <th style={styles.th}>Provider</th>
           <th style={styles.th}>Inventory</th>
         </tr>
@@ -158,15 +166,13 @@ function GetProviderDetails(state, index, providers) {
   var orderedTotals = 0;
   var providerCountTotals = 0;
   var firstLink = 0;
-  var d = new Date();
-  if (daysnotreported_filter !== "") d.setDate(d.getDate() - toNumber(daysnotreported_filter));
 
   var state_code = state[3] !== null ? state[3].trim() : state[3];
 
   var header = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
     <tr>
       <td style={styles.infoLabels}>
-        {state[2]} Health Dept Links:
+        {state[2]} Health Dept:
       </td>
       <td style={styles.stateInfo} colSpan='2'>
         <span>{state[7] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7],'Evusheld')}>'Evusheld' search</a></span> : false }</span>
@@ -195,18 +201,8 @@ function GetProviderDetails(state, index, providers) {
     var provider_x = null;
     var county = provider[4] !== null ? provider[4].trim() : provider[4];
     var city = provider[3] !== null ? provider[3].trim() : provider[3];
-    var d2 = null;
-    if (provider[13] !== "" && provider[10] !== "") { // no reported date, but did get delivery
-      d2 = new Date(provider[10]);
-    }
 
-    if (provider_state === state_code &&
-          (daysnotreported_filter === ""
-            || d > new Date(provider[13])
-            || (provider[13] === "" && provider[10] !== "" && d > d2)
-            )
-       ) { 
-      
+    if (provider_state === state_code) { 
       if ((stateFilter === null || stateFilter === state_code) 
          && (zipFilter === null || zipFilter === provider[6].substring(0,5))
          && (countyFilter === null || countyFilter === county.toUpperCase())
@@ -219,7 +215,6 @@ function GetProviderDetails(state, index, providers) {
             var linkToProvider = "?zip=" + provider[6].substring(0,5) + "&provider=" + provider_x.replaceAll(' ', '-');
             var linkToState = "?state=" + state_code;
             var zipCode = provider[6].substring(0,5);
-            var linkToZip = linkToState + "&zip=" + zipCode;
             var linkToCounty = linkToState + "&county=" + county;
             var linkToCity = linkToState + "&city=" + city;
             var firstRowOfCity = lastCity !== toTitleCase(city) || lastCounty !== county || lastState !== state_code;
@@ -255,7 +250,7 @@ function GetProviderDetails(state, index, providers) {
                 <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <a href={linkToProvider}>Inventory details</a> : false }</div>
                 <div style={styles.tinyFont}>&nbsp;</div>
               </td>
-              <td style={styles.td}>
+              <td style={styles.tdChart}>
                 { zipFilter !== null && providerFilter !== null ? (<>
                   <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
                   <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
@@ -315,16 +310,8 @@ function navigateToState(state) {
 
 function showAllProviders(e) {
   const params = new URLSearchParams(window.location.search);
-  if (params.has('daysnotreported')) params.delete('daysnotreported');
   window.history.replaceState({}, "Evusheld", `${window.location.pathname}?${params.toString()}`);
-  daysnotreported_filter = "";
   renderPage(states, evusheldSites, dataUpdates);
-}
-
-function ShowdaysnotreportedBanner(days) {
-  if (days !== "") {
-    return <>Showing only those providers who have NOT reported their inventory to HHS in {days} or more days <button onClick={(e)=>showAllProviders(e)}>show all</button></>
-  }
 }
 
 function renderPage(states, evusheldSites, dataUpdates) {
@@ -378,49 +365,44 @@ function renderPage(states, evusheldSites, dataUpdates) {
       else document.title = "Evusheld";
     }
 
-    if (urlParams.has('daysnotreported')) {
-      daysnotreported_filter = urlParams.get('daysnotreported');
-    }
-
     var dataUpdated = new Date(dataUpdates.data[0][0]);
     var dataUpdatedLocalString = dataUpdated.toLocaleString('en-US', { weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
 
     var page = 
       <div>
-        <div style={styles.centered}>
+        <div >
           {zipFilter === null && providerFilter === null ?
           <>
-          <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
-          <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
-            <option value="ChooseState">Choose State</option>
-            {states.data.map((state,index) => 
-              <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
-            )} 
-          </select>
-          <div style={styles.smallerFont}>
+          <div style={styles.centered}>
+            <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
+            <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
+              <option value="ChooseState">Choose State</option>
+              {states.data.map((state,index) => 
+                <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
+              )} 
+            </select>
+          </div>
+          <div style={styles.smallerCentered}>
             [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdatedLocalString}]
           </div>
-            <div onClick={mapClick} style={styles.mapDiv}>
-              <MapChart id='mapChart' />
-            </div>
-          <div style={styles.smallerFont}>
-            ( or view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> )
+          <div onClick={mapClick} style={styles.mapDiv}>
+            <MapChart id='mapChart' />
           </div>
+
           </>
           : false }
-          <div>
-            {
-              ShowdaysnotreportedBanner(daysnotreported_filter)
-            }
-          </div>
-          <div style={styles.smallerFont}>&nbsp;</div>
           <div>
             { 
               GetStateDetails(states.data, evusheldSites.data)
             }
           </div>
+          {zipFilter === null && providerFilter === null ?
+          <div style={styles.smallerCentered}>
+            ( view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> )
+          </div>
+          : false }
           <div style={styles.smallerFont}>&nbsp;</div>
-          <div style={styles.smallerFont}>
+          <div style={styles.smallerCentered}>
             Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> | 
             Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">data fetching</a> |
             Treament locators: <a href="https://rrelyea.github.io/sotrovimab">sotrovimab</a> and <a href="https://rrelyea.github.io/paxlovid">paxlovid</a>
