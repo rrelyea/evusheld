@@ -299,6 +299,7 @@ function GetProviderDetails(state, index, providers) {
                 <td colSpan='3'>
                   <br/>
                   <a name='add'><h3>Add info about this Provider to help others:</h3></a>
+                  <div>You can help others by adding information about this provider!</div>
                   <ol>
                     <li>Fill out answers to questions in the yellow area below. Don't include information you wouldn't want published.</li>
                     <li>(Don't change the question text, as a computer will read the answers.)</li>
