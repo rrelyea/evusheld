@@ -94,6 +94,12 @@ const styles = {
     padding: '0 0',
     backgroundColor: '#f1bb90',
   },
+  textArea: {
+    height: 300,
+    width: 600,
+    whiteSpace: 'pre-line',
+    background: 'lightyellow'
+  }
 }
 
 var stateFilter = null;
@@ -101,6 +107,7 @@ var countyFilter = null;
 var cityFilter = null;
 var zipFilter = null;
 var providerFilter = null;
+var body = "";
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -159,6 +166,18 @@ function SwapKeyword(url, keyword) {
 }
 
 function GetProviderDetails(state, index, providers) {
+  const updateTextArea = () =>  {
+    var mailtoLink = document.getElementById("mailtoLink");
+    var textArea = document.getElementById("textArea");
+    body = textArea.value;
+    var subject = "Info about: " + toTitleCase(providerFilter)+' ('+zipFilter + ')';
+    var email="evusheld-data@relyeas.net" 
+
+    let params = subject || body ? '?' : '';
+    if (subject) params += `subject=${encodeURIComponent(subject)}`;
+    if (body) params += `${subject ? '&' : ''}body=${encodeURIComponent(body)}`;
+    mailtoLink.href= `mailto:${email}${params}`;
+  }
   if (state[3].trim() === "") return null;
 
   var remainingTotals = 0;
@@ -246,7 +265,7 @@ function GetProviderDetails(state, index, providers) {
                 <div>{provider[2]}</div>
                 <div>{provider[6]}</div>
                 <div>{npi}</div>
-                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <a href={linkToProvider}>Inventory details</a> : false }</div>
+                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <a href={linkToProvider}>Inventory details or Share Info</a> : false }</div>
                 <div style={styles.tinyFont}>&nbsp;</div>
               </td>
               <td style={styles.tdChart}>
@@ -269,6 +288,35 @@ function GetProviderDetails(state, index, providers) {
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <DoseViewer zipCode={zipFilter} provider={providerUpper} />
+                </td>
+              </tr>
+              :false
+            }
+            {zipFilter !== null && providerFilter !== null ?
+              <tr style={lastCityStyle}>
+                <td colSpan='3'>
+                  <br/>
+                  <h3>Share info about this Provider to help others:</h3>
+                  <ol>
+                    <li>Fill out answers to questions in the yellow area below. Don't include information you wouldn't want published.</li>
+                    <li>(Don't change the question text, as a computer will read the answers.)</li>
+                    <li>Once you fill out the info, press the "Send this info" link below, then review and send the email.</li>
+                  </ol>
+                  If step 3 fails, do these manual steps to send the data to me:
+                  
+                  <ol>
+                    <li>Create an email to: evusheld-data@relyeas.net</li>
+                    <li>Make the subject exactly the following: "{"Info about: " + toTitleCase(providerFilter)+' ('+zipFilter + ')"'}</li>
+                    <li>Copy and Paste the questions/answers from the yellow area below to the body of the message</li>
+                    <li>Send that message!</li>
+                  </ol>
+                  <div>
+                    I will publish some of this info to the Evusheld community on this site, to help others. I will not share your name or email address.</div>
+                <textarea onChange={()=>updateTextArea()} id='textArea' style={styles.textArea} defaultValue={'Provider Webpage about Evusheld: \nProvider phone for Evusheld: \nProvider email for Evusheld: \nDid you get Evusheld dose here? \nProviders in network instructions: \nProvider out of network instructions: \nDid they require a prescription? \nAre you in a waiting list to get a dose here? \nInfo about who they will give Evusheld to: \nOther info that will help others: \n'}></textarea>
+                <br/>
+                <a id='mailtoLink' target='_blank'>
+                  Send this info
+                </a>
                 </td>
               </tr>
               :false
@@ -370,26 +418,28 @@ function renderPage(states, evusheldSites, dataUpdates) {
     var page = 
       <div>
         <div >
-          {zipFilter === null && providerFilter === null ?
-          <>
-          <div style={styles.centered}>
-            <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
-            <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
-              <option value="ChooseState">Choose State</option>
-              {states.data.map((state,index) => 
-                <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
-              )} 
-            </select>
-          </div>
-          <div style={styles.smallerCentered}>
-            [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdatedLocalString}]
-          </div>
-          <div onClick={mapClick} style={styles.mapDiv}>
-            <MapChart id='mapChart' />
-          </div>
 
-          </>
+          { zipFilter === null && providerFilter === null ?
+            <>
+            <div style={styles.centered}>
+              <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
+              <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
+                <option value="ChooseState">Choose State</option>
+                {states.data.map((state,index) => 
+                  <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
+                )} 
+              </select>
+            </div>
+            <div style={styles.smallerCentered}>
+              [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdatedLocalString}]
+            </div>
+            <div onClick={mapClick} style={styles.mapDiv}>
+              <MapChart id='mapChart' />
+            </div>
+
+            </>
           : false }
+
           <div>
             { 
               GetStateDetails(states.data, evusheldSites.data)
