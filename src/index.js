@@ -108,6 +108,7 @@ var cityFilter = null;
 var zipFilter = null;
 var providerFilter = null;
 var body = "";
+var pageLocation = "";
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -265,7 +266,7 @@ function GetProviderDetails(state, index, providers) {
                 <div>{provider[2]}</div>
                 <div>{provider[6]}</div>
                 <div>{npi}</div>
-                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <a href={linkToProvider}>Inventory details or Share Info</a> : false }</div>
+                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <><a href={linkToProvider}>Inventory details</a> <a href={linkToProvider+"#share"}>Share Info</a></> : false }</div>
                 <div style={styles.tinyFont}>&nbsp;</div>
               </td>
               <td style={styles.tdChart}>
@@ -284,19 +285,20 @@ function GetProviderDetails(state, index, providers) {
                 )}
               </td>
             </tr>
-            {zipFilter !== null && providerFilter !== null ?
+            {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
+                  <a href="#share">Share Info about Provider to Help Others</a><br/><br/>
                   <DoseViewer zipCode={zipFilter} provider={providerUpper} />
                 </td>
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== null ?
+            {zipFilter !== null && providerFilter !== "" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <br/>
-                  <h3>Share info about this Provider to help others:</h3>
+                  <h3 id='share'>Share info about this Provider to help others:</h3>
                   <ol>
                     <li>Fill out answers to questions in the yellow area below. Don't include information you wouldn't want published.</li>
                     <li>(Don't change the question text, as a computer will read the answers.)</li>
@@ -317,6 +319,14 @@ function GetProviderDetails(state, index, providers) {
                 <a id='mailtoLink' target='_blank'>
                   Send this info
                 </a>
+                </td>
+              </tr>
+              :false
+            }
+            {zipFilter !== null && providerFilter !== null && pageLocation!=="" ?
+              <tr style={lastCityStyle}>
+                <td colSpan='3'>
+                  <DoseViewer zipCode={zipFilter} provider={providerUpper} />
                 </td>
               </tr>
               :false
@@ -402,6 +412,7 @@ function renderPage(states, evusheldSites, dataUpdates) {
     cityFilter = urlParams.has('city') ? urlParams.get('city').toUpperCase() : null;
     zipFilter = urlParams.has('zip') ? urlParams.get('zip') : null;
     providerFilter = urlParams.has('provider') ? urlParams.get('provider').toUpperCase().replaceAll('-',' ') : null;
+    pageLocation = window.location.hash;
 
     if (zipFilter !== null && providerFilter !== null) {
       document.title = toTitleCase(providerFilter);
