@@ -266,7 +266,7 @@ function GetProviderDetails(state, index, providers) {
                 <div>{provider[2]}</div>
                 <div>{provider[6]}</div>
                 <div>{npi}</div>
-                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <><a href={linkToProvider}>Inventory details</a> <a href={linkToProvider+"#share"}>Share Info</a></> : false }</div>
+                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <><a href={linkToProvider+"#add"}>Add Info</a> | <a href={linkToProvider}>Inventory details</a></> : false }</div>
                 <div style={styles.tinyFont}>&nbsp;</div>
               </td>
               <td style={styles.tdChart}>
@@ -288,7 +288,7 @@ function GetProviderDetails(state, index, providers) {
             {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
-                  <a href="#share">Share Info about Provider to Help Others</a><br/><br/>
+                  <a href="#add">Add Info about Provider to Help Others</a><br/><br/>
                   <DoseViewer zipCode={zipFilter} provider={providerUpper} />
                 </td>
               </tr>
@@ -298,7 +298,7 @@ function GetProviderDetails(state, index, providers) {
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <br/>
-                  <h3 id='share'>Share info about this Provider to help others:</h3>
+                  <a name='add'><h3>Add info about this Provider to help others:</h3></a>
                   <ol>
                     <li>Fill out answers to questions in the yellow area below. Don't include information you wouldn't want published.</li>
                     <li>(Don't change the question text, as a computer will read the answers.)</li>
