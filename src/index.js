@@ -315,7 +315,7 @@ function GetProviderDetails(state, index, providers) {
                   </ol>
                   <div>
                     I will publish some of this info to the Evusheld community on this site, to help others. I will not share your name or email address.</div>
-                <textarea onChange={()=>updateTextArea()} id='textArea' style={styles.textArea} defaultValue={'Evusheld Site Url: ' + window.location + '\nProvider\'s main web page: \nProvider\'s evusheld web page: \nProvider phone for Evusheld: \nProvider email for Evusheld: \nDid you get Evusheld dose here? \nProviders in network instructions: \nProvider out of network instructions: \nDid they require a prescription? \nAre you in a waiting list to get a dose here? \nInfo about different priority groups in wait list: \nInfo about who they will give Evusheld to: \nOther info that will help others: \n'}></textarea>
+                <textarea onChange={()=>updateTextArea()} id='textArea' style={styles.textArea} defaultValue={'Evusheld Site Url: ' + window.location + '\nProvider\'s main web page: \nProvider\'s evusheld web page: \nProvider main phone #: \nProvider phone # for Evusheld: \nProvider email for Evusheld: \nDid you get Evusheld dose here? \nProviders in network instructions: \nProvider out of network instructions: \nDid they require a prescription? \nAre you in a waiting list to get a dose here? \nInfo about different priority groups in wait list: \nInfo about who they will give Evusheld to: \nOther info that will help others: \n'}></textarea>
                 <br/>
                 <a id='mailtoLink' target='_blank'>
                   Send this info
