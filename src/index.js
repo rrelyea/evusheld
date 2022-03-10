@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 import MapChart from "./MapChart";
 import allStates from "./data/allstates.json";
 import DoseViewer from './DoseViewer.js'
+import './index.css';
 
 const styles = {
   countyCity: {
@@ -464,7 +465,7 @@ function renderPage(states, evusheldSites, dataUpdates) {
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-            Contact: <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> or <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> | 
+            Contact <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> or <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> | 
             Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">data fetching</a> |
             Treament locators: <a href="https://rrelyea.github.io/sotrovimab">sotrovimab</a> and <a href="https://rrelyea.github.io/paxlovid">paxlovid</a>
           </div>
