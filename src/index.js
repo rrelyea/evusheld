@@ -183,9 +183,9 @@ function GetProviderDetails(state, index, providers) {
   }
   if (state[3].trim() === "") return null;
 
-  var available = 0;
-  var unreported = 0;
-  var allotted = 0;
+  var allottedTotal = 0;
+  var availableTotal = 0;
+  var unreportedTotal = 0;
   var providerCountTotals = 0;
   var firstLink = 0;
 
@@ -238,12 +238,12 @@ function GetProviderDetails(state, index, providers) {
             } else {
               cityMarkup = null;
             }
-            var remaining = toNumber(provider[12]);
-            var ordered = toNumber(provider[11]);
+            var allotted = toNumber(provider[11]);
+            var available = toNumber(provider[12]);
             var npi = provider[15].trim() === "" ? "" : "NPI# " + parseInt(provider[15]);
-            allotted += remaining === "--" ? 0 : parseInt(remaining);
-            unreported += remaining === "--" ? parseInt(ordered):0;
-            available += ordered === "--" ? 0 : parseInt(ordered);
+            allottedTotal += allotted === "--" ? 0 : parseInt(allotted);
+            availableTotal += available === "--" ? 0 : parseInt(available);
+            unreportedTotal += available === "--" ? parseInt(allotted):0;
             providerCountTotals += 1;
 
             return <><tr key={state_code+"-"+index.toString()} style={lastCityStyle}>
@@ -260,15 +260,15 @@ function GetProviderDetails(state, index, providers) {
               </td>
               <td style={styles.tdChart}>
                 { zipFilter !== null && providerFilter !== null ? (<>
-                  <div><span style={styles.doseCount}>{remaining}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
-                  <div><span style={styles.doseCount}>{ordered}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
+                  <div><span style={styles.doseCount}>{available}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
+                  <div><span style={styles.doseCount}>{allotted}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
                   <div>&nbsp;&nbsp;&nbsp;&nbsp;Last delivery: {toDate(provider[10])}</div>
                   <div style={styles.tinyFont}>&nbsp;</div>
                 </>) :
                 (
                 <>
                 <a href={linkToProvider}>
-                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={remaining} allotted={ordered} />
+                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} />
                 </a>
                 </>
                 )}
@@ -351,9 +351,9 @@ function GetProviderDetails(state, index, providers) {
     <td style={styles.infoLabels}>{cityFilter !== null ? "City":(countyFilter !== null?"County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
     <td style={styles.centered}>{providerCountTotals} providers</td>
     <td style={styles.doseCount}>
-      {'Available: ' + allotted + (state[11] !== '' ? ' (' + (allotted / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      {'Unreported: '+ unreported + (state[11] !== '' ? ' (' + (unreported / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      {'Allotted: '+ available + (state[11] !== '' ? ' (' + (available / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {'Allotted: '+ allottedTotal + (state[11] !== '' ? ' (' + (allottedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {(availableTotal/allottedTotal*100).toFixed(0) + '% Available: ' + availableTotal + (state[11] !== '' ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {(unreportedTotal/allottedTotal*100).toFixed(0) + '% Unreported: '+ unreportedTotal + (state[11] !== '' ? ' (' + (unreportedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
     </td>
   </tr>
   : false;
