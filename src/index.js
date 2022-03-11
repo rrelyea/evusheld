@@ -296,7 +296,7 @@ function GetProviderDetails(state, index, providers) {
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== "" ?
+            {zipFilter !== null && providerFilter !== null ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <br/>
@@ -358,7 +358,7 @@ function GetProviderDetails(state, index, providers) {
 
 function navigateToState(state) {
   const params = new URLSearchParams(window.location.search);
-  if (state !== "ChooseState") { params.set('state', state) } else if (params.has('state')) params.delete('state');
+  if (state !== "ChooseState" && state !== "" && state !== null) { params.set('state', state) } else if (params.has('state')) params.delete('state');
   if (params.has('county')) params.delete('county');
   if (params.has('city')) params.delete('city');
   if (params.has('zip')) params.delete('zip');
@@ -425,50 +425,52 @@ function renderPage(states, evusheldSites) {
       else if (stateFilter !== null) document.title = stateFilter + " Evusheld";
       else document.title = "Evusheld";
     }
-
+    var linkToState = stateFilter !== null ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
     var page = 
       <div>
         <div >
 
-          { zipFilter === null && providerFilter === null ?
+          { zipFilter === null || providerFilter === null ?
             <>
-            <div style={styles.centered}>
-              <label style={styles.chooseState} htmlFor='chooseState'>Evusheld order/inventory info for:&nbsp;</label>
-              <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
-                <option value="ChooseState">Choose State</option>
-                {states.data.map((state,index) => 
-                  <option key={index} value={index > 0 ? state[3].trim(): "ALL"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "All States & Territories"}</option>
-                )} 
-              </select>
-            </div>
-            <div style={styles.smallerCentered}>
-              [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
-            </div>
-            <div onClick={mapClick} style={styles.mapDiv}>
-              <MapChart id='mapChart' />
-            </div>
-
+              <div style={styles.centered}>
+                <label style={styles.chooseState} htmlFor='chooseState'>Evusheld providers in:&nbsp;</label>
+                <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
+                  <option value="ChooseState">Choose State</option>
+                  {states.data.map((state,index) => 
+                    <option key={index} value={index > 0 ? state[3].trim(): "--"}>{index > 0 ? state[2].trim() + " (" + state[3].trim() + ")" : "--"}</option>
+                  )} 
+                </select>
+              </div>
+              { countyFilter !== null ? <div style={styles.centered}>County: {toTitleCase(countyFilter)} <a href={linkToState}>(show all)</a> </div> : false }
+              { cityFilter !== null ? <div style={styles.centered}>City: {toTitleCase(cityFilter)} <a href={linkToState}>(show all)</a> </div> : false }
+              { providerFilter !== null ? <div style={styles.centered}>Provider contains '{providerFilter}' <a href={linkToState}>(show all)</a> </div> : false }
+              { zipFilter !== null ? <div style={styles.centered}>Zip Code: {zipFilter} <a href={linkToState}>(show all)</a> </div> : false }
+              <div onClick={mapClick} style={styles.mapDiv}>
+                <MapChart id='mapChart' />
+              </div>
             </>
           : false }
 
           <div>
-            { 
-              GetStateDetails(states.data, evusheldSites.data)
-            }
+            { providerFilter !== null ? <><div style={styles.centered}>Provider: {providerFilter}</div><div>&nbsp;</div></> : false }
+            <div style={styles.smallerCentered}>
+              [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
+            </div>
+            <div style={styles.smallerCentered}>&nbsp;</div>
+            { GetStateDetails(states.data, evusheldSites.data) }
           </div>
           {zipFilter === null && providerFilter === null ?
           <>
           <div style={styles.smallerCentered}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-            ( view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> )
+            ( view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> ) |             Treament locators: <a href="https://rrelyea.github.io/sotrovimab">sotrovimab</a> and <a href="https://rrelyea.github.io/paxlovid">paxlovid</a>
           </div>
           </>
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-            Contact <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> or <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> | 
-            Github repo for <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">data fetching</a> |
-            Treament locators: <a href="https://rrelyea.github.io/sotrovimab">sotrovimab</a> and <a href="https://rrelyea.github.io/paxlovid">paxlovid</a>
+            Contact <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> or <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> |
+            Open source: <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
         </div>
