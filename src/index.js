@@ -111,6 +111,7 @@ var providerFilter = null;
 var body = "";
 var pageLocation = "";
 var dataUpdated = null;
+var site = "evusheld";
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -277,17 +278,16 @@ function GetProviderDetails(state, index, providers) {
             {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
-                  <a href="#add">Add Info about Provider to Help Others</a><br/><br/>
                   <DoseViewer zipCode={zipFilter} provider={providerUpper} />
                 </td>
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== null ?
+            {zipFilter !== null && providerFilter !== null && site === "evusheld" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <br/>
-                  <a name='add'><h3>Add info about this Provider to help others:</h3></a>
+                  <h3>Add Info about Provider to Help Others</h3>
                   <div>You can help others by adding information about this provider!</div>
                   <ol>
                     <li>Fill out answers to questions in the yellow area below. Don't include information you wouldn't want published.</li>
@@ -313,7 +313,7 @@ function GetProviderDetails(state, index, providers) {
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== null && pageLocation!=="" ?
+            {zipFilter !== null && providerFilter !== null && pageLocation!=="" && site === "evusheld" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <DoseViewer zipCode={zipFilter} provider={providerUpper} />
@@ -374,12 +374,6 @@ function navigateToState(state) {
   if (params.has('provider')) params.delete('provider');
 
   window.history.replaceState({}, "Evusheld (" + state + ")", `${window.location.pathname}?${params.toString()}`);
-  renderPage(states, evusheldSites);
-}
-
-function showAllProviders(e) {
-  const params = new URLSearchParams(window.location.search);
-  window.history.replaceState({}, "Evusheld", `${window.location.pathname}?${params.toString()}`);
   renderPage(states, evusheldSites);
 }
 
