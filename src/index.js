@@ -251,12 +251,11 @@ function GetProviderDetails(state, index, providers) {
                 {cityMarkup}
               </td>
               <td style={styles.tdProvider}>
-                <div style={styles.mediumFont}>{provider_x}</div>
+                <div style={styles.mediumFont}><a href={linkToProvider}>{provider_x}</a></div>
                 <div>{toTitleCase(provider[1])}</div>
                 { zipFilter !== null && providerFilter !== null ? <div>{toTitleCase(provider[2])}</div> : false }
                 { zipFilter !== null && providerFilter !== null ? <div>{provider[6]}</div> : false }
                 { zipFilter !== null && providerFilter !== null ? <div>{npi}</div> : false }
-                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <><a href={linkToProvider+"#add"}>Add Info</a> | <a href={linkToProvider}>Show details</a></> : false }</div>
                 <div style={styles.tinyFont}>&nbsp;</div>
               </td>
               <td style={styles.tdChart}>
