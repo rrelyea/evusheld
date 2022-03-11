@@ -250,11 +250,11 @@ function GetProviderDetails(state, index, providers) {
               </td>
               <td style={styles.tdProvider}>
                 <div style={styles.mediumFont}>{provider_x}</div>
-                <div>{provider[1]}</div>
-                <div>{provider[2]}</div>
-                <div>{provider[6]}</div>
-                <div>{npi}</div>
-                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <><a href={linkToProvider+"#add"}>Add Info</a> | <a href={linkToProvider}>Inventory details</a></> : false }</div>
+                <div>{toTitleCase(provider[1])}</div>
+                <div>{toTitleCase(provider[2])}</div>
+                { zipFilter !== null && providerFilter !== null ? <div>{provider[6]}</div> : false }
+                { zipFilter !== null && providerFilter !== null ? <div>{npi}</div> : false }
+                <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <><a href={linkToProvider+"#add"}>Add Info</a> | <a href={linkToProvider}>Show details</a></> : false }</div>
                 <div style={styles.tinyFont}>&nbsp;</div>
               </td>
               <td style={styles.tdChart}>
