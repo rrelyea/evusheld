@@ -283,7 +283,7 @@ function GetProviderDetails(state, index, providers) {
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== null && site === "evusheld" ?
+            {zipFilter !== null && providerFilter !== null && site === "Evusheld" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <br/>
@@ -313,7 +313,7 @@ function GetProviderDetails(state, index, providers) {
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== null && pageLocation!=="" && site === "evusheld" ?
+            {zipFilter !== null && providerFilter !== null && pageLocation!=="" && site === "Evusheld" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <DoseViewer zipCode={zipFilter} provider={providerUpper} />
