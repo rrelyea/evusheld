@@ -110,6 +110,7 @@ var zipFilter = null;
 var providerFilter = null;
 var body = "";
 var pageLocation = "";
+var dataUpdated = null;
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -364,16 +365,16 @@ function navigateToState(state) {
   if (params.has('provider')) params.delete('provider');
 
   window.history.replaceState({}, "Evusheld (" + state + ")", `${window.location.pathname}?${params.toString()}`);
-  renderPage(states, evusheldSites, dataUpdates);
+  renderPage(states, evusheldSites);
 }
 
 function showAllProviders(e) {
   const params = new URLSearchParams(window.location.search);
   window.history.replaceState({}, "Evusheld", `${window.location.pathname}?${params.toString()}`);
-  renderPage(states, evusheldSites, dataUpdates);
+  renderPage(states, evusheldSites);
 }
 
-function renderPage(states, evusheldSites, dataUpdates) {
+function renderPage(states, evusheldSites) {
   const handleChange = (e) => {
     navigateToState(e.target.value);
   }
@@ -425,9 +426,6 @@ function renderPage(states, evusheldSites, dataUpdates) {
       else document.title = "Evusheld";
     }
 
-    var dataUpdated = new Date(dataUpdates.data[0][0]);
-    var dataUpdatedLocalString = dataUpdated.toLocaleString('en-US', { weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
-
     var page = 
       <div>
         <div >
@@ -444,7 +442,7 @@ function renderPage(states, evusheldSites, dataUpdates) {
               </select>
             </div>
             <div style={styles.smallerCentered}>
-              [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdatedLocalString}]
+              [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
             </div>
             <div onClick={mapClick} style={styles.mapDiv}>
               <MapChart id='mapChart' />
@@ -485,7 +483,7 @@ Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history
   download: true,
   complete: function(evusheldResults) {
     evusheldSites = evusheldResults;
-    renderPage(states, evusheldSites, dataUpdates);
+    renderPage(states, evusheldSites);
   }
 });
 
@@ -498,16 +496,20 @@ Papa.parse(baseUri + "state-health-departments.csv?"+urlSuffix, {
   download: true,
   complete: function(stateResults) {
     states = stateResults;
-    renderPage(states, evusheldSites, dataUpdates);
+    renderPage(states, evusheldSites);
   }
 });
 
-var dataUpdates = null;
-Papa.parse(baseUri + "data/evusheld-data-updates.log", {
+Papa.parse(baseUri + "data/therapeutics-last-processed.txt", {
   download: true,
-  complete: function(updates) {
-    dataUpdates = updates;
-    renderPage(states, evusheldSites, dataUpdates);
+  complete: function(lastProcessedData) {
+    // parse date as UTC, but it is really eastern time, so add 5 hours to have correct UTC time.
+    var dataUpdatedDate = new Date(lastProcessedData.data[0] + 'Z');
+    dataUpdatedDate.setHours(dataUpdatedDate.getHours() + 5);
+
+    // create string with local time/date
+    dataUpdated = dataUpdatedDate.toLocaleString('en-US', {weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
+    renderPage(states, evusheldSites);
   }
 });
 
