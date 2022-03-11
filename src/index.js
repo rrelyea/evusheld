@@ -16,9 +16,10 @@ const styles = {
     marginTop: '30px',
     marginBottom: '30px',
     margin: '0 auto',
+    borderCollapse: 'collapse',
   },
   doseCount: {
-    fontSize: '14pt',
+    fontSize: '12pt',
     verticalAlign: 'bottom'
   },
   doseLabel: {
@@ -73,7 +74,7 @@ const styles = {
     backgroundColor: '#9095f1',
     top: '0px',
     zIndex: 2,
-    fontSize: '20px'
+    fontSize: '20px',
   },
   odd: {
     background: 'white',
@@ -84,7 +85,6 @@ const styles = {
   stateInfo: {
     backgroundColor: '#f1bb90',
     textAlign: 'left',
-    paddingLeft: '10px',
   },
   infoLabels: {
     backgroundColor: '#f1bb90',
@@ -140,7 +140,7 @@ function GetStateDetails(states, providers) {
         <tr>
           <th style={styles.th}>&nbsp;State - County - City&nbsp;</th>
           <th style={styles.th}>Provider</th>
-          <th style={styles.th}>Inventory</th>
+          <th style={styles.th}>Doses</th>
         </tr>
         </thead>
         {StateDetails}
@@ -183,28 +183,13 @@ function GetProviderDetails(state, index, providers) {
   }
   if (state[3].trim() === "") return null;
 
-  var remainingTotals = 0;
-  var orderedTotals = 0;
+  var available = 0;
+  var unreported = 0;
+  var allotted = 0;
   var providerCountTotals = 0;
   var firstLink = 0;
 
   var state_code = state[3] !== null ? state[3].trim() : state[3];
-
-  var header = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
-    <tr>
-      <td style={styles.infoLabels}>
-        {state[2]} Health Dept:
-      </td>
-      <td style={styles.stateInfo} colSpan='2'>
-        <span>{state[7] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7],'Evusheld')}>'Evusheld' search</a></span> : false }</span>
-        <span>{state[8] !== ""? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+state[8]}>Covid Info</a></span> : false }</span>
-        <span>{state[0] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={"https://"+state[0]}>{state[0]}</a></span> : false }</span>
-        <span>{state[5] !== "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
-        <span>{state[6] !== "" ? " | " + state[6] : ""}</span> 
-        <span>{state[4] !== "" ? <span> | <a href={"https://twitter.com/"+state[4]}>{'@'+state[4]}</a></span> : false } </span> 
-      </td>
-    </tr>
-    : false;
 
   var lastCity = "";
   var lastCounty = "";
@@ -254,8 +239,9 @@ function GetProviderDetails(state, index, providers) {
             var remaining = toNumber(provider[12]);
             var ordered = toNumber(provider[11]);
             var npi = provider[15].trim() === "" ? "" : "NPI# " + parseInt(provider[15]);
-            remainingTotals += remaining === "--" ? 0 : parseInt(remaining);
-            orderedTotals += ordered === "--" ? 0 : parseInt(ordered);
+            allotted += remaining === "--" ? 0 : parseInt(remaining);
+            unreported += remaining === "--" ? parseInt(ordered):0;
+            available += ordered === "--" ? 0 : parseInt(ordered);
             providerCountTotals += 1;
 
             return <><tr key={state_code+"-"+index.toString()} style={lastCityStyle}>
@@ -341,18 +327,40 @@ function GetProviderDetails(state, index, providers) {
     }
   });
 
-  var footer = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
+  var header = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
+  <tr>
+    <td style={styles.infoLabels}>
+      {state[2]} Health Dept:
+    </td>
+    <td style={styles.stateInfo} colSpan='2'>
+      <span>{state[7] !== "" ? <span>{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7],'Evusheld')}>'Evusheld' search</a></span> : false }</span>
+      <span>{state[8] !== ""? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+state[8]}>Covid Info</a></span> : false }</span>
+      <span>{state[0] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={"https://"+state[0]}>{state[0]}</a></span> : false }</span>
+      <span>{state[5] !== "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
+      <span>{state[6] !== "" ? " | " + state[6] : ""}</span> 
+      <span>{state[4] !== "" ? <span> | <a href={"https://twitter.com/"+state[4]}>{'@'+state[4]}</a></span> : false } </span> 
+    </td>
+  </tr>
+  : false;
+
+  // calculate population for state per 100k people.
+  var pop100ks = state[11]/100000;
+  var totals = state.length > 1 && state[2] != null && state[2].trim() !== "state" ?
   <tr style={styles.totals}>
-    <td style={styles.totals}>{cityFilter !== null ? "City":(countyFilter !== null?"County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
-    <td style={styles.doseCount}>{providerCountTotals} providers</td>
-    <td style={styles.doseCount}>{remainingTotals + " / " + orderedTotals}</td>
+    <td style={styles.infoLabels}>{cityFilter !== null ? "City":(countyFilter !== null?"County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
+    <td style={styles.centered}>{providerCountTotals} providers</td>
+    <td style={styles.doseCount}>
+      {'Available: ' + allotted + (state[11] !== '' ? ' (' + (allotted / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {'Unreported: '+ unreported + (state[11] !== '' ? ' (' + (unreported / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+      {'Allotted: '+ available + (state[11] !== '' ? ' (' + (available / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
+    </td>
   </tr>
   : false;
 
   return <tbody>
        { stateFilter !== null && state_code === stateFilter ? header : false }
+       { (stateFilter !== null && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter !== null) ? totals : false}
        { providerList }
-       { (stateFilter !== null && state_code===stateFilter) && (zipFilter !== null || countyFilter !== null || cityFilter !== null | stateFilter !== null) ? footer : false}
        </tbody>
 }
 
