@@ -230,7 +230,9 @@ function GetProviderDetails(state, index, providers) {
               lastCounty = county;
               cityMarkup = 
               <div style={styles.countyCity}>
-                <a href={linkToState}>{state_code}</a> - <a href={linkToCounty}>{toTitleCase(county)}</a> - <a href={linkToCity}>{toTitleCase(city)}</a>
+                <a href={linkToState}>{state_code}</a><br/>
+                <a href={linkToCounty}>{toTitleCase(county)}</a><br/>
+                <a href={linkToCity}>{toTitleCase(city)}</a>
               </div>;
               lastCityStyle = lastCityStyle === styles.odd ? styles.even : styles.odd;
             } else {
@@ -251,7 +253,7 @@ function GetProviderDetails(state, index, providers) {
               <td style={styles.tdProvider}>
                 <div style={styles.mediumFont}>{provider_x}</div>
                 <div>{toTitleCase(provider[1])}</div>
-                <div>{toTitleCase(provider[2])}</div>
+                { zipFilter !== null && providerFilter !== null ? <div>{toTitleCase(provider[2])}</div> : false }
                 { zipFilter !== null && providerFilter !== null ? <div>{provider[6]}</div> : false }
                 { zipFilter !== null && providerFilter !== null ? <div>{npi}</div> : false }
                 <div style={styles.smallerFont}>{zipFilter === null && providerFilter === null ? <><a href={linkToProvider+"#add"}>Add Info</a> | <a href={linkToProvider}>Show details</a></> : false }</div>

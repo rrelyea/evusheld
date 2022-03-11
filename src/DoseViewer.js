@@ -133,7 +133,7 @@ class DoseViewer extends React.Component {
         return (
         <>
           <div id='doses'>
-            <Chart type='line' id='chart' height={this.props.mini === 'true' ? 125 : 250} data={this.state.chartData} options={this.state.chartOptions} />
+            <Chart type='line' id='chart' height='100' data={this.state.chartData} options={this.state.chartOptions} />
           </div>
           { this.props.mini !== 'true' ? 
           <div><br/><a href={this.baseUrl + this.props.zipCode + ".csv"}>raw inventory data ({this.props.zipCode+".csv"})</a></div>
