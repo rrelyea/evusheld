@@ -111,7 +111,7 @@ var providerFilter = null;
 var body = "";
 var pageLocation = "";
 var dataUpdated = null;
-var site = "evusheld";
+var site = "Evusheld";
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -334,7 +334,7 @@ function GetProviderDetails(state, index, providers) {
       {state[2]} Health Dept:
     </td>
     <td style={styles.stateInfo} colSpan='2'>
-      <span>{state[7] !== "" ? <span>{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7],'Evusheld')}>'Evusheld' search</a></span> : false }</span>
+    <span>{state[7] !== "" ? <span>{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7], site)}>{"'" + site + "' search"}</a></span> : false }</span>
       <span>{state[8] !== ""? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+state[8]}>Covid Info</a></span> : false }</span>
       <span>{state[0] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={"https://"+state[0]}>{state[0]}</a></span> : false }</span>
       <span>{state[5] !== "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
@@ -373,11 +373,11 @@ function navigateToState(state) {
   if (params.has('zip')) params.delete('zip');
   if (params.has('provider')) params.delete('provider');
 
-  window.history.replaceState({}, "Evusheld (" + state + ")", `${window.location.pathname}?${params.toString()}`);
-  renderPage(states, evusheldSites);
+  window.history.replaceState({}, null, `${window.location.pathname}?${params.toString()}`);
+  renderPage(states, mabSites);
 }
 
-function renderPage(states, evusheldSites) {
+function renderPage(states, mabSites) {
   const handleChange = (e) => {
     navigateToState(e.target.value);
   }
@@ -409,7 +409,7 @@ function renderPage(states, evusheldSites) {
     }
   }
 
-  if (states != null && evusheldSites != null)
+  if (states != null && mabSites != null)
   {
     var urlParams = new URLSearchParams(window.location.search);
 
@@ -425,7 +425,7 @@ function renderPage(states, evusheldSites) {
     } else {
       if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " Evusheld";
       else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " Evusheld";
-      else if (stateFilter !== null) document.title = stateFilter + " Evusheld";
+      else if (stateFilter !== null) document.title = stateFilter + " " + site;
       else document.title = "Evusheld";
     }
     var linkToState = stateFilter !== null ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
@@ -436,7 +436,7 @@ function renderPage(states, evusheldSites) {
           { zipFilter === null || providerFilter === null ?
             <>
               <div style={styles.centered}>
-                <label style={styles.chooseState} htmlFor='chooseState'>Evusheld providers in:&nbsp;</label>
+                <label style={styles.chooseState} htmlFor='chooseState'>{site} providers in:&nbsp;</label>
                 <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
                   <option value="ChooseState">Choose State</option>
                   {states.data.map((state,index) => 
@@ -460,7 +460,7 @@ function renderPage(states, evusheldSites) {
               [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
             </div>
             <div style={styles.smallerCentered}>&nbsp;</div>
-            { GetStateDetails(states.data, evusheldSites.data) }
+            { GetStateDetails(states.data, mabSites.data) }
           </div>
           {zipFilter === null && providerFilter === null ?
           <>
@@ -473,7 +473,7 @@ function renderPage(states, evusheldSites) {
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
             Contact <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> or <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> |
-            Open source: <a href="https://github.com/rrelyea/evusheld">this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
+            Open source: <a href={"https://github.com/rrelyea/"+site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
         </div>
@@ -483,12 +483,12 @@ function renderPage(states, evusheldSites) {
   }
 }
 
-var evusheldSites = null;
-Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv", {
+var mabSites = null;
+Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+site.toLowerCase()+"-data.csv", {
   download: true,
-  complete: function(evusheldResults) {
-    evusheldSites = evusheldResults;
-    renderPage(states, evusheldSites);
+  complete: function(mabResults) {
+    mabSites = mabResults;
+    renderPage(states, mabSites);
   }
 });
 
@@ -501,7 +501,7 @@ Papa.parse(baseUri + "state-health-departments.csv?"+urlSuffix, {
   download: true,
   complete: function(stateResults) {
     states = stateResults;
-    renderPage(states, evusheldSites);
+    renderPage(states, mabSites);
   }
 });
 
@@ -514,7 +514,7 @@ Papa.parse(baseUri + "data/therapeutics-last-processed.txt", {
 
     // create string with local time/date
     dataUpdated = dataUpdatedDate.toLocaleString('en-US', {weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
-    renderPage(states, evusheldSites);
+    renderPage(states, mabSites);
   }
 });
 
