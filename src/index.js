@@ -458,7 +458,7 @@ function renderPage(states, mabSites) {
           : false }
 
           <div>
-            { providerFilter !== null ? <><div style={styles.centered}>Provider: {providerFilter}</div><div>&nbsp;</div></> : false }
+            { providerFilter !== null ? <><div style={styles.centered}>{constants.site} Provider: {providerFilter}</div><div>&nbsp;</div></> : false }
             <div style={styles.smallerCentered}>
               [Data harvested from <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8">healthdata.gov</a>, which last updated: {dataUpdated}]
             </div>
