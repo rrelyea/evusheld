@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom'
 import MapChart from "./MapChart";
 import allStates from "./data/allstates.json";
 import DoseViewer from './DoseViewer.js'
+import * as constants from './siteConstants.js';
 import './index.css';
 
 const styles = {
@@ -111,8 +112,6 @@ var providerFilter = null;
 var body = "";
 var pageLocation = "";
 var dataUpdated = null;
-var site = "Evusheld";
-var siteLower = "evusheld";
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -270,7 +269,7 @@ function GetProviderDetails(state, index, providers) {
                 (
                 <>
                 <a href={linkToProvider}>
-                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={siteLower} />
+                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={constants.siteLower} />
                 </a>
                 </>
                 )}
@@ -279,12 +278,12 @@ function GetProviderDetails(state, index, providers) {
             {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
-                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={siteLower} />
+                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={constants.siteLower} />
                 </td>
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== null && site === "Evusheld" ?
+            {zipFilter !== null && providerFilter !== null && constants.site === "Evusheld" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <br/>
@@ -307,14 +306,14 @@ function GetProviderDetails(state, index, providers) {
                     I will publish some of this info to the Evusheld community on this site, to help others. I will not share your name or email address.</div>
                 <textarea onChange={()=>updateTextArea()} id='textArea' style={styles.textArea} defaultValue={'Evusheld Site Url: ' + window.location + '\nProvider\'s main web page: \nProvider\'s evusheld web page: \nProvider main phone #: \nProvider phone # for Evusheld: \nProvider email for Evusheld: \nDid you get Evusheld dose here? \nProviders in network instructions: \nProvider out of network instructions: \nDid they require a prescription? \nAre you in a waiting list to get a dose here? \nInfo about different priority groups in wait list: \nInfo about who they will give Evusheld to: \nOther info that will help others: \n'}></textarea>
                 <br/>
-                <a id='mailtoLink' target='_blank'>
+                <a id='mailtoLink' href="mailto:evusheld-info@relyeas.net">
                   Send this info
                 </a>
                 </td>
               </tr>
               :false
             }
-            {zipFilter !== null && providerFilter !== null && pageLocation!=="" && site === "Evusheld" ?
+            {zipFilter !== null && providerFilter !== null && pageLocation!=="" && constants.site === "Evusheld" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
                   <DoseViewer zipCode={zipFilter} provider={providerUpper} />
@@ -335,7 +334,7 @@ function GetProviderDetails(state, index, providers) {
       {state[2]} Health Dept:
     </td>
     <td style={styles.stateInfo} colSpan='2'>
-    <span>{state[7] !== "" ? <span>{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7], site)}>{"'" + site + "' search"}</a></span> : false }</span>
+    <span>{state[7] !== "" ? <span>{firstLink++ === 0?"":"|"} <a href={'https://'+SwapKeyword(state[7], constants.site)}>{"'" + constants.site + "' search"}</a></span> : false }</span>
       <span>{state[8] !== ""? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={'https://'+state[8]}>Covid Info</a></span> : false }</span>
       <span>{state[0] !== "" ? <span>&nbsp;{firstLink++ === 0?"":"|"} <a href={"https://"+state[0]}>{state[0]}</a></span> : false }</span>
       <span>{state[5] !== "" ? <span><span> | </span><a href={"mailto:"+state[5]}>{state[5]}</a></span> : ""}</span>  
@@ -424,10 +423,10 @@ function renderPage(states, mabSites) {
     if (zipFilter !== null && providerFilter !== null) {
       document.title = toTitleCase(providerFilter);
     } else {
-      if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + site;
-      else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + site;
-      else if (stateFilter !== null) document.title = stateFilter + " " + site;
-      else document.title = site;
+      if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + constants.site;
+      else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + constants.site;
+      else if (stateFilter !== null) document.title = stateFilter + " " + constants.site;
+      else document.title = constants.site;
     }
     var linkToState = stateFilter !== null ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
     var page = 
@@ -437,7 +436,7 @@ function renderPage(states, mabSites) {
           { zipFilter === null || providerFilter === null ?
             <>
               <div style={styles.centered}>
-                <label style={styles.chooseState} htmlFor='chooseState'>{site} providers in:&nbsp;</label>
+                <label style={styles.chooseState} htmlFor='chooseState'>{constants.site} providers in:&nbsp;</label>
                 <select style={styles.mediumFont} id='chooseState' value={stateFilter !== null ? stateFilter.toUpperCase() : ""} onChange={(e) => handleChange(e)}>
                   <option value="ChooseState">Choose State</option>
                   {states.data.map((state,index) => 
@@ -468,19 +467,19 @@ function renderPage(states, mabSites) {
           <div style={styles.smallerCentered}>&nbsp;</div>
           <div style={styles.smallerCentered}>
             ( view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>
-            , <a href={"https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+site.toLowerCase()+"-data.csv"}>CSV File</a>
-              { site === "Evusheld" ? <>, <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'> Microsoft Excel</a></>:""} 
-              { site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Google Sheets</a></>:""}
+            , <a href={"https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+constants.site.toLowerCase()+"-data.csv"}>CSV File</a>
+              { constants.site === "Evusheld" ? <>, <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'> Microsoft Excel</a></>:""} 
+              { constants.site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Google Sheets</a></>:""}
               &nbsp;or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> ) |
-              { site !== "Evusheld" ? <> Prevention locator: vaccine &amp; <a href="https://rrelyea.github.io/evusheld">evusheld</a> |</>:""}
-              &nbsp;Treatments: { site !== "Bebtelovimab" ? <a href='https://rrelyea.github.io/bebtelovimab'>bebtelovimab</a>:""} { site !== "Paxlovid" ? <a href='https://rrelyea.github.io/paxlovid'>paxlovid</a>:""} { site !== "Sotrovimab" ? <a href='https://rrelyea.github.io/sotrovimab'>sotrovimab</a>:""} 
+              Prevention: <a href='https://vaccines.gov'>vaccine/boost</a> &amp; <a href="https://rrelyea.github.io/evusheld">evusheld</a> |
+              &nbsp;Treatments: { constants.site !== "Bebtelovimab" ? <a href='https://rrelyea.github.io/bebtelovimab'>bebtelovimab</a>:""} { constants.site !== "Paxlovid" ? <a href='https://rrelyea.github.io/paxlovid'>paxlovid</a>:""} { constants.site !== "Sotrovimab" ? <a href='https://rrelyea.github.io/sotrovimab'>sotrovimab</a>:""} 
           </div>
           </>
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
             Contact <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> or <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> |
-            Open source: <a href={"https://github.com/rrelyea/"+site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
+            Open source: <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
         </div>
@@ -491,7 +490,7 @@ function renderPage(states, mabSites) {
 }
 
 var mabSites = null;
-Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+site.toLowerCase()+"-data.csv", {
+Papa.parse("https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+constants.site.toLowerCase()+"-data.csv", {
   download: true,
   complete: function(mabResults) {
     mabSites = mabResults;
