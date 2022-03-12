@@ -112,6 +112,7 @@ var body = "";
 var pageLocation = "";
 var dataUpdated = null;
 var site = "Evusheld";
+var siteLower = "evusheld";
 
 function toTitleCase(str) {
   return str.toLowerCase().split(' ').map(function (word) {
@@ -269,7 +270,7 @@ function GetProviderDetails(state, index, providers) {
                 (
                 <>
                 <a href={linkToProvider}>
-                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} />
+                  <DoseViewer zipCode={zipCode} provider={providerUpper} mini='true' available={available} allotted={allotted} site={siteLower} />
                 </a>
                 </>
                 )}
@@ -278,7 +279,7 @@ function GetProviderDetails(state, index, providers) {
             {zipFilter !== null && providerFilter !== null && pageLocation==="" ?
               <tr style={lastCityStyle}>
                 <td colSpan='3'>
-                  <DoseViewer zipCode={zipFilter} provider={providerUpper} />
+                  <DoseViewer zipCode={zipFilter} provider={providerUpper} site={siteLower} />
                 </td>
               </tr>
               :false

@@ -54,7 +54,7 @@ class DoseViewer extends React.Component {
         }
     }
 
-    baseUrl = "https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/dose-details/";
+    baseUrl = "https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/data/dose-details/" + this.props.site + "/";
 
     async toCsv(uri) {
       return new Promise((resolve, reject) => {
