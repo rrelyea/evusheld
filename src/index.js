@@ -424,10 +424,10 @@ function renderPage(states, mabSites) {
     if (zipFilter !== null && providerFilter !== null) {
       document.title = toTitleCase(providerFilter);
     } else {
-      if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " Evusheld";
-      else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " Evusheld";
+      if (stateFilter !== null && countyFilter !== null) document.title = stateFilter + "/" + toTitleCase(countyFilter) + " " + site;
+      else if (stateFilter !== null && cityFilter !== null) document.title = stateFilter + "/" + toTitleCase(cityFilter) + " " + site;
       else if (stateFilter !== null) document.title = stateFilter + " " + site;
-      else document.title = "Evusheld";
+      else document.title = site;
     }
     var linkToState = stateFilter !== null ? "?state=" + stateFilter : window.location.pathname.split("?")[0];
     var page = 
@@ -467,7 +467,13 @@ function renderPage(states, mabSites) {
           <>
           <div style={styles.smallerCentered}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-            ( view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>, <a href="https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD"> Microsoft Excel</a>, <a href="https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing">Google Sheets</a>, <a href="https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/evusheld-data.csv">CSV File</a>, or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> ) |             Treament locators: <a href="https://rrelyea.github.io/sotrovimab">sotrovimab</a> and <a href="https://rrelyea.github.io/paxlovid">paxlovid</a>
+            ( view same data in <a href="https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/">a searchable map (HHS)</a>
+            , <a href={"https://raw.githubusercontent.com/rrelyea/evusheld-locations-history/main/"+site.toLowerCase()+"-data.csv"}>CSV File</a>
+              { site === "Evusheld" ? <>, <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'> Microsoft Excel</a></>:""} 
+              { site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Google Sheets</a></>:""}
+              &nbsp;or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> ) |
+              { site !== "Evusheld" ? <> Prevention locator: vaccine &amp; <a href="https://rrelyea.github.io/evusheld">evusheld</a> |</>:""}
+              &nbsp;Treatments: { site !== "Bebtelovimab" ? <a href='https://rrelyea.github.io/bebtelovimab'>bebtelovimab</a>:""} { site !== "Paxlovid" ? <a href='https://rrelyea.github.io/paxlovid'>paxlovid</a>:""} { site !== "Sotrovimab" ? <a href='https://rrelyea.github.io/sotrovimab'>sotrovimab</a>:""} 
           </div>
           </>
           : false }
