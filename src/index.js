@@ -136,16 +136,19 @@ function GetStateDetails(states, providers) {
   if (stateFilter !== null || zipFilter !== null || providerFilter !== null || cityFilter != null || countyFilter !== null)
   {
     return (
-      <table style={styles.providerTable}>
-        <thead>
-        <tr>
-          <th style={styles.th}>&nbsp;State - County - City&nbsp;</th>
-          <th style={styles.th}>Provider</th>
-          <th style={styles.th}>Doses</th>
-        </tr>
-        </thead>
-        {StateDetails}
-      </table>);
+      <>
+        <table style={styles.providerTable}>
+          <thead>
+            <tr>
+              <th style={styles.th}>&nbsp;State - County - City&nbsp;</th>
+              <th style={styles.th}>Provider</th>
+              <th style={styles.th}>Doses</th>
+            </tr>
+          </thead>
+          {StateDetails}
+        </table>
+      </>
+      );
   }
   else
   {
@@ -472,15 +475,13 @@ function renderPage(states, mabSites) {
               { constants.site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Google Sheets</a></>:""}
               &nbsp;or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> ) <br/>
               <div style={styles.smallerFont}>&nbsp;</div>
-              Prevention: <a href='https://vaccines.gov'>vaccine/boost</a> &amp; <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> |
-              Treatments: <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a> <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a> <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a> <a target='_blank' href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
+              <b>Prevention:</b> <a href='https://vaccines.gov'>vaccine/boost</a> &amp; <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> <b>Treatments:</b> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a> <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a> <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a> <a target='_blank' href={'https://covid-19-therapeutics-locator-dhhs.hub.arcgis.com/'+(window.location.search === "" ? '?' : window.location.search + "&") +'drug=molnupiravir'}>molnupiravir</a> 
           </div>
           </>
           : false }
           <div style={styles.smallerFont}>&nbsp;</div>
           <div style={styles.smallerCentered}>
-            Contact <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> or <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> |
-            Open source: <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
+            <b>Contact:</b> <a href="https://twitter.com/rrelyea">@rrelyea</a> or <a href="mailto:rob@relyeas.net">rob@relyeas.net</a> or <a href='https://buymeacoffee.com/rrelyea'>buy me a coffee</a> <b>Open source:</b> <a href={"https://github.com/rrelyea/"+constants.site.toLowerCase()}>this site</a> and <a href="https://github.com/rrelyea/evusheld-locations-history">git-scraping</a>
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
         </div>
