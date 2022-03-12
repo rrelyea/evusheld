@@ -471,8 +471,8 @@ function renderPage(states, mabSites) {
               { constants.site === "Evusheld" ? <>, <a href='https://1drv.ms/x/s!AhC1RgsYG5Ltv55eBLmCP2tJomHPFQ?e=XbsTzD'> Microsoft Excel</a></>:""} 
               { constants.site === "Evusheld" ? <>, <a href='https://docs.google.com/spreadsheets/d/14jiaYK5wzTWQ6o_dZogQjoOMWZopamrfAlWLBKWocLs/edit?usp=sharing'>Google Sheets</a></>:""}
               &nbsp;or <a href="https://healthdata.gov/Health/COVID-19-Public-Therapeutic-Locator/rxn6-qnx8/data">healthdata.gov</a> ) |
-              Prevention: <a href='https://vaccines.gov'>vaccine/boost</a> &amp; <a href="https://rrelyea.github.io/evusheld">evusheld</a> |
-              &nbsp;Treatments: { constants.site !== "Bebtelovimab" ? <a href='https://rrelyea.github.io/bebtelovimab'>bebtelovimab</a>:""} { constants.site !== "Paxlovid" ? <a href='https://rrelyea.github.io/paxlovid'>paxlovid</a>:""} { constants.site !== "Sotrovimab" ? <a href='https://rrelyea.github.io/sotrovimab'>sotrovimab</a>:""} 
+              Prevention: <a href='https://vaccines.gov'>vaccine/boost</a> &amp; <a href={'https://rrelyea.github.io/evusheld'+window.location.search}>evusheld</a> |
+              &nbsp;Treatments: <a href={'https://rrelyea.github.io/bebtelovimab'+window.location.search}>bebtelovimab</a> <a href={'https://rrelyea.github.io/paxlovid'+window.location.search}>paxlovid</a> <a href={'https://rrelyea.github.io/sotrovimab'+window.location.search}>sotrovimab</a> 
           </div>
           </>
           : false }
