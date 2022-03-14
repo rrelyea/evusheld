@@ -514,8 +514,8 @@ function renderPage(states, mabSites) {
                 </> : false
                 }
               </div>
-              { cityFilter !== null ? <div style={styles.centered}>City: {toTitleCase(cityFilter)} <a href={linkToState}>(show all)</a> </div> : false }
-              { providerFilter !== null ? <div style={styles.centered}>Provider contains '{providerFilter}' <a href={linkToState}>(show all)</a> </div> : false }
+              { cityFilter !== null ? <div style={styles.centered}>City: {toTitleCase(cityFilter)} <a href={linkToState}>(clear)</a> </div> : false }
+              { providerFilter !== null ? <div style={styles.centered}>Provider contains '{providerFilter}' <a href={linkToState}>(clear)</a> </div> : false }
               { zipFilter !== null ? <div style={styles.centered}>Zip Code: {zipFilter} </div> : false }
               <div onClick={mapClick} style={styles.mapDiv}>
                 <MapChart id='mapChart' />
