@@ -1,4 +1,4 @@
-$sites = @('bebtelovimab','paxlovid','sotrovimab')
+$sites = @('paxlovid','bebtelovimab','sotrovimab')
 foreach ( $site in $sites )
 {
     cd ..\$site\
