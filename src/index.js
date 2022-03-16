@@ -53,6 +53,10 @@ const styles = {
   centered: {
     textAlign: 'center',
   },
+  centeredYellow: {
+    textAlign: 'center',
+    background: 'yellow',
+  },
   td: {
     maxWidth: '100px',
     verticalAlign: 'top',
@@ -542,7 +546,10 @@ function renderPage(states, mabSites) {
               </div>
               </> : false 
             }
-            <div style={styles.smallerCentered}>&nbsp;</div>
+          <div style={styles.centeredYellow}>
+            NOTE: healthdata.gov just posted new data around 4pm PT on 3/16, and they moved some stuff around. Broke available and allotted counts. You can still see yesterday's data if you click on the provider name link or on the dose history chart. Will fix ASAP!
+          </div>
+          <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }
           </div>
           {zipFilter === null && providerFilter === null ?
