@@ -2,7 +2,7 @@ param(
     [Parameter()]
     [String]$message
 )
-$sites = @('bebtelovimab','paxlovid','sotrovimab')
+$sites = @('evusheld','bebtelovimab','paxlovid','sotrovimab')
 foreach ( $site in $sites )
 {
     cd ..\$site\

@@ -2,7 +2,7 @@ param(
     [Parameter()]
     [String]$file
 )
-$sites = @('bebtelovimab','paxlovid','sotrovimab')
+$sites = @('paxlovid','bebtelovimab','sotrovimab')
 foreach ( $site in $sites )
 {
     "Port $file to ..\$site\$file"
