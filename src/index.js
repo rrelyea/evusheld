@@ -248,8 +248,8 @@ function GetProviderDetails(state, index, providers) {
             } else {
               cityMarkup = null;
             }
-            var allotted = toNumber(provider[11]);
-            var available = toNumber(provider[12]);
+            var allotted = 0; // healthdata.gov no longer publishes allotted doses!
+            var available = toNumber(provider[9]);
             var npi = provider[15].trim() === "" ? "" : "NPI# " + parseInt(provider[15]);
             allottedTotal += allotted === "--" ? 0 : parseInt(allotted);
             availableTotal += available === "--" ? 0 : parseInt(available);
@@ -271,8 +271,8 @@ function GetProviderDetails(state, index, providers) {
               <td style={styles.tdChart}>
                 { zipFilter !== null && providerFilter !== null ? (<>
                   <div><span style={styles.doseCount}>{available}</span> <span style={styles.doseLabel}> avail @{toDate(provider[13])}</span></div>
-                  <div><span style={styles.doseCount}>{allotted}</span> <span style={styles.doseLabel}> allotted @{toDate(provider[9])}</span></div>
-                  <div>Last delivery: {toDate(provider[10])}</div>
+                  <div><span style={styles.doseLabel}> Allotted: NO LONGER PUBLISHED*</span></div>
+                  <div>Last delivery: NO LONGER PUBLISHED*</div>
                   <div style={styles.tinyFont}>&nbsp;</div>
                 </>) :
                 (
@@ -361,9 +361,7 @@ function GetProviderDetails(state, index, providers) {
     <td style={styles.infoLabels}>{cityFilter !== null ? toTitleCase(cityFilter):(countyFilter !== null? toTitleCase(countyFilter) + " County":(zipFilter!=null?"Zip":(stateFilter != null ? "State":"")))} Totals:</td>
     <td style={styles.centered}>{providerCountTotals} providers</td>
     <td style={styles.doseCount}>
-      {'Allotted: '+ allottedTotal + (show100kStats ? ' (' + (allottedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
       {(allottedTotal > 0 ? (availableTotal/allottedTotal*100).toFixed(0) + '% ': "") +'Available: ' + availableTotal + (show100kStats ? ' (' + (availableTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
-      {(allottedTotal > 0 ? (unreportedTotal/allottedTotal*100).toFixed(0) + '% ': "") +'Unreported: ' + unreportedTotal + (show100kStats ? ' (' + (unreportedTotal / pop100ks).toFixed(1) +' /100k)' : "")}<br/>
     </td>
   </tr>
   : false;
@@ -547,7 +545,7 @@ function renderPage(states, mabSites) {
               </> : false 
             }
           <div style={styles.centeredYellow}>
-            NOTE: healthdata.gov just posted new data around 4pm PT on 3/16, and they moved some stuff around. Broke available and allotted counts. You can still see yesterday's data if you click on the provider name link or on the dose history chart. Will fix ASAP!
+            NOTE: healthdata.gov just STOPPED publishing allotted doses and last delivery date at 4pm PT on 3/16. Still adapting, but most things are working, minus that data. Surprise to all us data consumers!
           </div>
           <div style={styles.smallerCentered}>&nbsp;</div>
             { GetStateDetails(states.data, mabSites.data) }
