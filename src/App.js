@@ -1,4 +1,3 @@
-import './App.css';
 import reportWebVitals from './reportWebVitals';
 import Papa from 'papaparse';
 import React from 'react';
@@ -7,7 +6,7 @@ import MapChart from "./MapChart";
 import allStates from "./data/allstates.json";
 import DoseViewer from './DoseViewer.js'
 import * as constants from './siteConstants.js';
-import './index.css';
+import './App.css';
 
 const styles = {
   countyCity: {
@@ -589,6 +588,9 @@ function renderPage(states) {
 }
 
 var mabSites0315 = null;
+var mabSites = null;
+var states = null;
+
 function load0315Providers() {
   var providers0315 = baseUri + "data/therapeutics/2022-03-15-Snapshot/"+constants.siteLower+"-data.csv"
   Papa.parse(providers0315, {
@@ -600,47 +602,47 @@ function load0315Providers() {
   });
 }
 
-var mabSites = null;
-var currentProviders = baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv"
-Papa.parse(currentProviders, {
-  download: true,
-  complete: function(mabResults) {
-    mabSites = mabResults;
-    renderPage(states);
-  }
-});
+function loadData() {
+  var currentProviders = baseUri + "data/therapeutics/"+constants.siteLower+"/"+constants.siteLower+"-providers.csv"
+  Papa.parse(currentProviders, {
+    download: true,
+    complete: function(mabResults) {
+      mabSites = mabResults;
+      renderPage(states);
+    }
+  });
 
-var states = null;
 
-var currentTime = new Date();
-var urlSuffix = currentTime.getMinutes() + "-" + currentTime.getSeconds();
-Papa.parse(baseUri + "data/states/state-health-info.csv?"+urlSuffix, {
-  download: true,
-  complete: function(stateResults) {
-    states = stateResults;
-    renderPage(states);
-  }
-});
+  var currentTime = new Date();
+  var urlSuffix = currentTime.getMinutes() + "-" + currentTime.getSeconds();
+  Papa.parse(baseUri + "data/states/state-health-info.csv?"+urlSuffix, {
+    download: true,
+    complete: function(stateResults) {
+      states = stateResults;
+      renderPage(states);
+    }
+  });
 
-Papa.parse(baseUri + "data/therapeutics/process-dates.csv", {
-  download: true,
-  complete: function(lastProcessedData) {
-    // parse date as UTC, but it is really eastern time, so add 5 hours to have correct UTC time.
-    var dataUpdatedDate = new Date(lastProcessedData.data[0][0] + 'Z');
-    dataUpdatedDate.setHours(dataUpdatedDate.getHours() + 5);
+  Papa.parse(baseUri + "data/therapeutics/process-dates.csv", {
+    download: true,
+    complete: function(lastProcessedData) {
+      // parse date as UTC, but it is really eastern time, so add 5 hours to have correct UTC time.
+      var dataUpdatedDate = new Date(lastProcessedData.data[0][0] + 'Z');
+      dataUpdatedDate.setHours(dataUpdatedDate.getHours() + 5);
 
-    // create string with local time/date
-    dataUpdated = dataUpdatedDate.toLocaleString('en-US', {weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
-    renderPage(states);
-  }
-});
-
+      // create string with local time/date
+      dataUpdated = dataUpdatedDate.toLocaleString('en-US', {weekday: 'short', month: 'numeric', day:'numeric', hour:'numeric', minute:'numeric', timeZoneName: 'short' });
+      renderPage(states);
+    }
+  });
+}
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
 function App() {
+  loadData();
   return (
     <div className="App">
     </div>
