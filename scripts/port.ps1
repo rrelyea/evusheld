@@ -7,10 +7,11 @@ foreach ( $site in $sites )
 {
     if ($site -ne 'evusheld')
     {
-        "Port $file to ..\$site\$file"
+        "$site : Port $file to ..\$site\$file"
         Copy-Item $file ..\$site\$file
     }
     cd ..\$site\
+    "$site : git add $file"
     git add $file
 }
 cd ..\evusheld
