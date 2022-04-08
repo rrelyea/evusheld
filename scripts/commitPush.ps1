@@ -2,7 +2,7 @@ param(
     [Parameter()]
     [String]$message
 )
-$sites = @('evusheld','bebtelovimab','paxlovid','sotrovimab')
+$sites = @('evusheld','bebtelovimab','paxlovid','sotrovimab','lagevrio')
 foreach ( $site in $sites )
 {
     "$site : git commit & git push"

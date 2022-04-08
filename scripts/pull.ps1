@@ -1,4 +1,4 @@
-$sites = @('evusheld','paxlovid','bebtelovimab','sotrovimab')
+$sites = @('evusheld','paxlovid','bebtelovimab','sotrovimab','lagevrio')
 foreach ( $site in $sites )
 {
     "$site : git pull"
