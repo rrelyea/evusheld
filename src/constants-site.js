@@ -1,3 +1,3 @@
 export const site = "Evusheld";
 export const siteLower = "evusheld";
-export const branch = "dev-rrelyea";
+export const dosesInBox = 24;
