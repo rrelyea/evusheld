@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/evusheld/static/css/main.990bf6e6.css",
-    "main.js": "/evusheld/static/js/main.4c8b38e2.js",
+    "main.js": "/evusheld/static/js/main.a9d10dd4.js",
     "static/js/787.55e32945.chunk.js": "/evusheld/static/js/787.55e32945.chunk.js",
     "index.html": "/evusheld/index.html",
     "main.990bf6e6.css.map": "/evusheld/static/css/main.990bf6e6.css.map",
-    "main.4c8b38e2.js.map": "/evusheld/static/js/main.4c8b38e2.js.map",
+    "main.a9d10dd4.js.map": "/evusheld/static/js/main.a9d10dd4.js.map",
     "787.55e32945.chunk.js.map": "/evusheld/static/js/787.55e32945.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.990bf6e6.css",
-    "static/js/main.4c8b38e2.js"
+    "static/js/main.a9d10dd4.js"
   ]
 }
