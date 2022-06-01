@@ -11,7 +11,7 @@ ReactDOM.render(
   <BrowserRouter>
     <Routes>
       <Route path={constantsSite.siteLower + "/"} element={<App />} />
-      <Route path={constantsSite.siteLower + "/guide"} element={<Guide />} />
+      <Route path={"/guide"} element={<Guide />} />
     </Routes>
   </BrowserRouter>,
   document.getElementById("root")
