@@ -3,7 +3,7 @@
   "name": "Evusheld orders, inventory and info.",
   "icons": [
   ],
-  "start_url": "/evusheld/",
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#000000",
   "background_color": "#ffffff"
