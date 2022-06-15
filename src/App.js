@@ -271,6 +271,7 @@ function NavigationHeader() {
       <div onClick={mapClick} className='mapDiv'>
         <MapChart id='mapChart' />
       </div>
+      { constantsSite.siteLower === "evusheld" ? <div className='centered'>Use: <a href='/evusheld/guide/'>Evusheld Guide</a> for tips and info to get Evusheld<br/></div> : false }
     </>
   : false;
 }
